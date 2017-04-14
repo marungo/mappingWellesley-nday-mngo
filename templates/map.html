@@ -1,0 +1,46 @@
+<!-- Google Maps API Key: -->
+<!-- AIzaSyA-nT9fP4I7GrFPu_J-V-5ajx1Esns2aNk -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- <script type="text/javascript" src="map.js"></script> -->
+    <style>
+       #map {
+        height: 400px;
+        width: 100%;
+       }
+    </style>
+  </head>
+  <body>
+    <h3>My Google Maps Demo</h3>
+    <div id="map"></div>
+    <script type="text/javascript">
+
+      var map;
+
+      function addMarker(latitude,longitude) {
+        var marker = new google.maps.Marker({
+          position: {lat: latitude, lng: longitude},
+          map: map
+        });
+      }
+
+      function initMap() {
+        var uluru = {lat: -25.363, lng: 131.044};
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 4,
+          center: {lat: 45, lng: -71}
+        });
+      }
+
+      function loadInitiliaze() {
+        google.maps.event.addDomListener(window, 'load', initialize);
+        addMarker(43,-75);
+      }
+
+    </script> 
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-nT9fP4I7GrFPu_J-V-5ajx1Esns2aNk&callback=initMap"></script>
+  </body>
+</html>
