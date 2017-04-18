@@ -14,48 +14,106 @@
     </style>
   </head>
   <body>
-    <h3>My Google Maps Demo</h3>   
+    <h3>Mapping Wellesley Connections</h3>   
+
+    <input id="pac-input" class="controls" type="text" placeholder="Search Box"width='400px'>
 
     <button id="btnaddmarker">add marker</button>
+
+    <!-- ADD FORM FOR INPUTTING INFO FOR AN INFOWINDOW -->
 
     <div id="map"></div>
     <script type="text/javascript">
 
-      var map;
-
-      function addMarker(latitude,longitude) {
-        var marker = new google.maps.Marker({
-          position: {lat: latitude, lng: longitude},
-          map: map
-        });
-      }
+      var map,latlng;
 
       function initMap() {
-        var uluru = {lat: -25.363, lng: 131.044};
         map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 4,
-          center: {lat: 45, lng: -71}
+          center: {lat: 42, lng: -71},
+          zoom: 11,
+          mapTypeId: 'roadmap'
         });
-        addMarker(43,-75);
+
+        // Create the search box and link it to the UI element.
+        var input = document.getElementById('pac-input');
+        var searchBox = new google.maps.places.SearchBox(input);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        // Bias the SearchBox results towards current map's viewport.
+        map.addListener('bounds_changed', function() {
+          searchBox.setBounds(map.getBounds());
+        });
+
+        var markers = [];
+        // Listen for the event fired when the user selects a prediction and retrieve
+        // more details for that place.
+        searchBox.addListener('places_changed', function() {
+          var places = searchBox.getPlaces();
+
+          if (places.length == 0) {
+            return;
+          }
+
+          // Clear out the old markers.
+          markers.forEach(function(marker) {
+            marker.setMap(null);
+          });
+          markers = [];
+
+          // For each place, get the icon, name and location.
+          var bounds = new google.maps.LatLngBounds();
+          places.forEach(function(place) {
+            if (!place.geometry) {
+              console.log("Returned place contains no geometry");
+              return;
+            }
+
+            // Create a marker for each place.
+            markers.push(new google.maps.Marker({
+              map: map,
+              title: place.name,
+              position: place.geometry.location
+            }));
+
+            latlng = place.geometry.location
+
+            if (place.geometry.viewport) {
+              // Only geocodes have viewport.
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+          });
+          map.fitBounds(bounds);
+        });
       }
 
-      function addmarker(latilongi) {
+      function addmarker(latlng) {
+          // var latlng = new google.maps.LatLng(lat,lng);
+          // CREATE INFOWINDOW
+          contentString = "<p>Hi</p>";
+          var infowindow = new google.maps.InfoWindow({
+            content: contentString
+          });
           var marker = new google.maps.Marker({
-              position: latilongi,
+              position: latlng,
               title: 'new marker',
-              draggable: true,
+              // draggable: true,
               map: map
           });
-          map.setCenter(marker.getPosition())
+          console.log("added marker at ", latlng);
+          map.setCenter(marker.getPosition());
+          marker.addListener('click', function() {
+            infowindow.open(map,marker)
+          })
       }
 
       $('#btnaddmarker').on('click', function() {
-          var latlng = new google.maps.LatLng(42.745334, 12.738430);
           addmarker(latlng)
       })
 
     </script> 
 
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-nT9fP4I7GrFPu_J-V-5ajx1Esns2aNk&callback=initMap" type="text/javascript"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-nT9fP4I7GrFPu_J-V-5ajx1Esns2aNk&callback=initMap&libraries=places" type="text/javascript"></script>
   </body>
 </html>
