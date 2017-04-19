@@ -1,0 +1,36 @@
+
+<!doctype html>
+<html lang='en'>
+<head>
+    <meta charset='utf-8'>
+    <meta name=author content="Scott D. Anderson">
+    <title></title>
+    <link rel='stylesheet' href="/cs304app/static/style.css">
+     
+</head>
+<body>  
+
+<!-- display flash messages -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div id="flashes">
+    {% for message in messages %}
+      <p>{{ message }}</p>
+    {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<h1>Login</h1>
+
+<p>Please login:
+    <form method="post" action="">
+        <p><label for="username">Username</label>
+            <input type="text" name="username"></p>
+        <p><label for="password">Password</label>
+            <input type="password" name="password"></p>
+        <p><input type="submit"></p>
+    </form></p>
+
+</body>
+</html>

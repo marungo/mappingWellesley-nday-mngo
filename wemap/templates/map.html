@@ -17,16 +17,19 @@
     <h3>Mapping Wellesley Connections</h3>   
 
     <input id="pac-input" class="controls" type="text" placeholder="Search Box"width='400px'>
-
+    <!-- ADD FORM FOR INPUTTING INFO FOR AN INFOWINDOW -->
+    <form action="" method="post">
+      <p>Title: <input type='text' id='title' name='title' value="" default='Randomly Met an Alumna on the train!'></p>
+      <p>Contents: <textarea id='contents' name='contents' rows='5' cols='50' default='describe your experience'></textarea></p><br>
+    </form>
+    <br>
     <button id="btnaddmarker">add marker</button>
 
-    <!-- ADD FORM FOR INPUTTING INFO FOR AN INFOWINDOW -->
 
     <div id="map"></div>
     <script type="text/javascript">
 
-      var map,latlng;
-
+      var map,latng;
       function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: 42, lng: -71},
@@ -67,7 +70,6 @@
               console.log("Returned place contains no geometry");
               return;
             }
-
             // Create a marker for each place.
             markers.push(new google.maps.Marker({
               map: map,
@@ -91,7 +93,11 @@
       function addmarker(latlng) {
           // var latlng = new google.maps.LatLng(lat,lng);
           // CREATE INFOWINDOW
-          contentString = "<p>Hi</p>";
+          var title = document.getElementById('title').value;
+          var contents = document.getElementById('contents').value;
+
+          contentString = "<h3>"+title+"</h3>"+
+                          "<p>"+contents+"</p>";
           var infowindow = new google.maps.InfoWindow({
             content: contentString
           });
