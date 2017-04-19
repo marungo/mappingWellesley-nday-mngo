@@ -11,10 +11,8 @@ app = Flask(__name__)
 app.secret_key = '39tsfkajie' # for flashing
 # GoogleMaps(app, key='AIzaSyA-nT9fP4I7GrFPu_J-V-5ajx1Esns2aNk')
 
-# Global variable to avoid hacking via entering username directly in URL
 logged_in = False
 
-# URL for map page for a logged in user
 @app.route('/<username>', methods=['POST', 'GET'])
 def base(username):
 	print(username)
@@ -24,7 +22,6 @@ def base(username):
 	# 	info['contents'] = request.form['contents']
 	return render_template('map.html',username=username)
 
-# URL for login page
 @app.route('/login/', methods=["GET", "POST"])
 def login():
     if request.method == 'POST':
@@ -41,7 +38,6 @@ def login():
             return render_template('login.html')
     return render_template('login.html')
 
-# URL for user homepage 
 @app.route('/user/<username>')
 def user(username):
 	global logged_in
