@@ -1,6 +1,6 @@
 dsn = {
-	'user': 'mngo',
-	'passwd': 'vynHd72QiToNcPx',
+	'user': 'mapdb',
+	'passwd': 'nnmhNR33ETKuQAy',
 	'host': 'localhost',
-	'db': 'mngo_db'
+	'db': 'mapdb_db'
 }

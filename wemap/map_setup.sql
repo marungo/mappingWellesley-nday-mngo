@@ -18,6 +18,7 @@ create table wellesley_people(
 
 create table anecdotes(
 	aid int auto_increment primary key,
+	title varchar(100) not null,
 	content varchar(300) not null, -- parse #tags and @usernames later
 	lat float(9,6) not null,
 	lng float(9,6) not null,
