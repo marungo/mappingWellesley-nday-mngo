@@ -28,6 +28,11 @@ def map(username):
 			content = request.form['content']
 			conn = queries.getConn()
 			worked = queries.insertAnecdote(conn,title,content,lat,lng,username)
+	
+	global logged_in	
+	if not logged_in:
+		flash("you need to log in!")
+		return redirect(url_for('login'))
 	conn = queries.getConn()
 	anecdotes = queries.getAllAnecdotes(conn)
 	return render_template('map.html', username=username, anecdotes=anecdotes)
@@ -53,13 +58,15 @@ def login():
 def user(username):
 	if request.method=="POST":
 		return redirect(url_for('map', username=username))
+	
 	global logged_in
-	if logged_in:
-		conn = queries.getConn()
-		anecdotes = queries.getAnecdotesByUser(conn, username)
-		return render_template('user.html', user=user, anecdotes=anecdotes)
-	flash("You need to login!")
-	return redirect(url_for('login'))
+	if not logged_in:
+		flash("You need to log in!")
+		return redirect(url_for('login'))
+	conn = queries.getConn()
+	anecdotes = queries.getAnecdotesByUser(conn, username)
+	return render_template('user.html', user=user, anecdotes=anecdotes)
+
 
 if __name__ == '__main__':
 	app.debug = True
