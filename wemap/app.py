@@ -14,13 +14,23 @@ app.secret_key = '39tsfkajie' # for flashing
 logged_in = False
 
 @app.route('/<username>', methods=['POST', 'GET'])
-def base(username):
-	print(username)
-	# info = {}
-	# if request.method=="post":
-	# 	info['title'] = request.form['title']
-	# 	info['contents'] = request.form['contents']
-	return render_template('map.html',username=username)
+def map(username):
+	if request.method=="POST":
+		if request.form['submit'] == "Go To Your Profile":
+			# print("user button")
+			return redirect(url_for('user', username=username))
+		else:
+			print("insert anecdote clause")
+			lat = request.form['lat']
+			lng = request.form['lng']
+			title = request.form['title']
+			content = request.form['content']
+			print("before conn")
+			conn = queries.getConn()
+			print("after conn")
+			worked = queries.insertAnecdote(conn,title,content,lat,lng,username)
+			print(worked)
+	return render_template('map.html', username=username)
 
 @app.route('/login/', methods=["GET", "POST"])
 def login():
@@ -32,19 +42,20 @@ def login():
         if correct:
         	global logged_in
         	logged_in = True
-        	return redirect(url_for('base', username=username))
+        	return redirect(url_for('map', username=username))
         else:
             flash("Sorry; incorrect")
             return render_template('login.html')
     return render_template('login.html')
 
-@app.route('/user/<username>')
+@app.route('/user/<username>', methods=["GET", "POST"])
 def user(username):
+	if request.method=="POST":
+		return redirect(url_for('map', username=username))
 	global logged_in
 	if logged_in:
 		conn = queries.getConn()
-		user = queries.getUserInfo(conn,username)
-		anecdotes = queries.getAnecdotes(conn, user['pid'])
+		anecdotes = queries.getAnecdotes(conn, username)
 		return render_template('user.html', user=user, anecdotes=anecdotes)
 	flash("You need to login!")
 	return redirect(url_for('login'))

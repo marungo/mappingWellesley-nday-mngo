@@ -8,33 +8,44 @@ from mngo_dsn import dsn
 # sql statement to add users to database
 ################################################
 def insertUser(nm,email,password,year):
-	username = email.split("@")[0]
-	curs = conn.cursor(MySQLdb.cursors.DictCursor)
-	try:
-		curs.execute("INSERT into wellesley_people (nm,email,username,password,year)"+\
-			"values (%s,%s,%s,%s,%s)",(nm,email,username,password,year))
-		return True
-	except MySQLdb.Error:
-		return False
+    username = email.split("@")[0]
+    curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    print("before")
+    curs.execute("INSERT into wellesley_people (nm,email,username,password,year)"+\
+        "values (%s,%s,%s,%s,%s)",(nm,email,username,password,year))
+    print("after")
+    return True
 
 ################################################
 # 
 ################################################
-def insertAnecdote(conn,title,content,lat,lng,pid):
+def insertAnecdote(conn,title,content,lat,lng,username):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    print("before")
     try:
-    	curs.execute("INSERT into anecdotes (title,content,lat,lng,pid)"+ \
-    		"values (%s,%s,%s,%s,%s)",(title,content,lat,lng,pid))
+        print("in try")
+    	curs.execute("INSERT into anecdotes (title,content,lat,lng,username)"+ \
+    		"values (%s,%s,%s,%s,%s)",(title,content,lat,lng,username))
+        print("after")
     	return True
     except MySQLdb.Error:
+        print("error")
     	return False
 
 ################################################
 # 
 ################################################
-def getAnecdotes(conn,pid):
+def getAnecdotesByUser(conn,username):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
-    curs.execute("SELECT * from anecdotes where pid=%s",(pid,))
+    curs.execute("SELECT * from anecdotes where username=%s",(username,))
+    return curs.fetchall()
+
+################################################
+# 
+################################################
+def getAllAnecdotes(conn,username):
+    curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    curs.execute("SELECT * from anecdotes")
     return curs.fetchall()
 
 ################################################

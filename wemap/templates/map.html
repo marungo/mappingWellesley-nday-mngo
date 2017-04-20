@@ -16,20 +16,31 @@
   <body>
     <h3>Mapping Wellesley Connections</h3>
 
-    <input id="pac-input" class="controls" type="text" placeholder="Search Box"width='400px'>
+    <form method='post' name="user">
+      <input type='submit' name="submit" value="Go To Your Profile">
+    </form>
+
     <!-- ADD FORM FOR INPUTTING INFO FOR AN INFOWINDOW -->
-    <form action="" method="post">
+    <form action="" method="post" name="anecdote">
       <p>Title: <input type='text' id='title' name='title' value="" default='Randomly Met an Alumna on the train!'></p>
-      <p>Contents: <textarea id='contents' name='contents' rows='5' cols='50' default='describe your experience'></textarea></p><br>
+
+      <p>Contents: <textarea name='content' rows='5' cols='50' default='describe your experience'></textarea></p>
+      <br>
+
+      <input type="hidden" name="lat" value="">
+      <input type="hidden" name="lng" value="">
+
+      <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+
+      <input type="submit" name="submit" id="btnaddmarker" value="add marker">
     </form>
     <br>
-    <button id="btnaddmarker">add marker</button>
-
 
     <div id="map"></div>
     <script type="text/javascript">
 
       var map,latng;
+
       function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: 42, lng: -71},
@@ -78,6 +89,8 @@
             }));
 
             latlng = place.geometry.location
+            document.getElementById("lat").value = latlng.lat()
+            document.getElementById("lng").value = latlng.lng()
 
             if (place.geometry.viewport) {
               // Only geocodes have viewport.
@@ -90,9 +103,7 @@
         });
       }
 
-      function addmarker(latlng) {
-          // var latlng = new google.maps.LatLng(lat,lng);
-          // CREATE INFOWINDOW
+      function addmarker() {
           var title = document.getElementById('title').value;
           var contents = document.getElementById('contents').value;
 
@@ -115,7 +126,7 @@
       }
 
       $('#btnaddmarker').on('click', function() {
-          addmarker(latlng)
+          addmarker()
       })
 
     </script> 

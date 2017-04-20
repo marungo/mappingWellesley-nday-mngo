@@ -11,12 +11,13 @@
     </style>
   </head>
   <body>
+    <form method='post' name="map">
+      <input type='submit' name="submit" value="Go To Map"></input>
+    </form>
     <h2>Welcome {{ user.nm }} </h2>
-
     {% for anecdote in anecdotes %}
         <h3>{{ anecdote.title }}</h3>
         <p>{{ anecdote.content }}</p>
     {% endfor %}
-      
   </body>
 </html>

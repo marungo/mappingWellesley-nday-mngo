@@ -4,14 +4,11 @@ drop table if exists anecdotes;
 drop table if exists wellesley_people;
 
 create table wellesley_people(
-	pid int auto_increment primary key, 
-	-- ^ perhaps email alias/username, not auto_increment int
-	nm varchar(30) not null,
+	username varchar(8) primary key,
 	email varchar(22) not null, -- wwellesle@wellesley.edu
-	username varchar(8) not null,
+	nm varchar(30) not null,
 	password varchar(50) not null, -- encrypted eventually?
-	yr int, -- graduation year! :D 
-	num_anecdotes int default 0 -- starts as 0
+	yr int -- graduation year! :D 
 	)
 	-- table constraint
 	ENGINE = InnoDB;
@@ -22,12 +19,13 @@ create table anecdotes(
 	content varchar(300) not null, -- parse #tags and @usernames later
 	lat float(9,6) not null,
 	lng float(9,6) not null,
-	pid int not null,
-	INDEX (pid),
-	foreign key (pid) references wellesley_people(pid) on delete cascade
+	username varchar(8) not null,
+	INDEX (username),
+	foreign key (username) references wellesley_people(username) on delete cascade
 	)
 	-- table constraint
 	ENGINE = InnoDB; 
 
 # ANONYMOUS user
-INSERT into wellesley_people values (1, 'Wendy Wellesley','wwellesl@wellesley.edu','wwellesl','wendy4prez',1993,0);
+INSERT into wellesley_people values ('wwellesl','wwellesl@wellesley.edu','Wendy Wellesley','wendy4prez',1993);
+INSERT into anecdotes values (1, "my title", "anecdote content",42.0,-71.3,"wwellesl");
