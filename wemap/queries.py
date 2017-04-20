@@ -43,7 +43,7 @@ def getAnecdotesByUser(conn,username):
 ################################################
 # 
 ################################################
-def getAllAnecdotes(conn,username):
+def getAllAnecdotes(conn):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     curs.execute("SELECT * from anecdotes")
     return curs.fetchall()

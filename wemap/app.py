@@ -20,17 +20,15 @@ def map(username):
 			# print("user button")
 			return redirect(url_for('user', username=username))
 		else:
-			print("insert anecdote clause")
 			lat = request.form['lat']
 			lng = request.form['lng']
 			title = request.form['title']
 			content = request.form['content']
-			print("before conn")
 			conn = queries.getConn()
-			print("after conn")
 			worked = queries.insertAnecdote(conn,title,content,lat,lng,username)
-			print(worked)
-	return render_template('map.html', username=username)
+	conn = queries.getConn()
+	anecdotes = queries.getAllAnecdotes(conn)
+	return render_template('map.html', username=username, anecdotes=anecdotes)
 
 @app.route('/login/', methods=["GET", "POST"])
 def login():
@@ -55,7 +53,7 @@ def user(username):
 	global logged_in
 	if logged_in:
 		conn = queries.getConn()
-		anecdotes = queries.getAnecdotes(conn, username)
+		anecdotes = queries.getAnecdotesByUser(conn, username)
 		return render_template('user.html', user=user, anecdotes=anecdotes)
 	flash("You need to login!")
 	return redirect(url_for('login'))
