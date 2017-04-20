@@ -65,6 +65,7 @@ def user(username):
 		return redirect(url_for('login'))
 	conn = queries.getConn()
 	anecdotes = queries.getAnecdotesByUser(conn, username)
+	user = queries.getUserInfo(conn,username)
 	return render_template('user.html', user=user, anecdotes=anecdotes)
 
 
