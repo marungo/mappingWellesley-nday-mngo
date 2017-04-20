@@ -11,28 +11,17 @@ app = Flask(__name__)
 app.secret_key = '39tsfkajie' # for flashing
 # GoogleMaps(app, key='AIzaSyA-nT9fP4I7GrFPu_J-V-5ajx1Esns2aNk')
 
-# Global variable to avoid hacking via entering username directly in URL
 logged_in = False
 
-# URL for map page for a logged in user
 @app.route('/<username>', methods=['POST', 'GET'])
-def map(username):
-	if request.method=="POST":
-		if request.form['submit'] == "Go To Your Profile":
-			# print("user button")
-			return redirect(url_for('user', username=username))
-		else:
-			lat = request.form['lat']
-			lng = request.form['lng']
-			title = request.form['title']
-			content = request.form['content']
-			conn = queries.getConn()
-			worked = queries.insertAnecdote(conn,title,content,lat,lng,username)
-	conn = queries.getConn()
-	anecdotes = queries.getAllAnecdotes(conn)
-	return render_template('map.html', username=username, anecdotes=anecdotes)
+def base(username):
+	print(username)
+	# info = {}
+	# if request.method=="post":
+	# 	info['title'] = request.form['title']
+	# 	info['contents'] = request.form['contents']
+	return render_template('map.html',username=username)
 
-# URL for login page
 @app.route('/login/', methods=["GET", "POST"])
 def login():
     if request.method == 'POST':
@@ -43,20 +32,19 @@ def login():
         if correct:
         	global logged_in
         	logged_in = True
-        	return redirect(url_for('map', username=username))
+        	return redirect(url_for('base', username=username))
         else:
             flash("Sorry; incorrect")
             return render_template('login.html')
     return render_template('login.html')
 
-@app.route('/user/<username>', methods=["GET", "POST"])
+@app.route('/user/<username>')
 def user(username):
-	if request.method=="POST":
-		return redirect(url_for('map', username=username))
 	global logged_in
 	if logged_in:
 		conn = queries.getConn()
-		anecdotes = queries.getAnecdotesByUser(conn, username)
+		user = queries.getUserInfo(conn,username)
+		anecdotes = queries.getAnecdotes(conn, user['pid'])
 		return render_template('user.html', user=user, anecdotes=anecdotes)
 	flash("You need to login!")
 	return redirect(url_for('login'))
