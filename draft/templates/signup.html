@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang='en'>
+<head>
+    <meta charset='utf-8'>
+    <meta name=author content="Naomi Day and MR Ngo">
+</head>
+<body>  
+
+<!-- display flash messages -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div id="flashes">
+    {% for message in messages %}
+      <p>{{ message }}</p>
+    {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<h1>Sign Up!</h1>
+
+<p>Please Sign Up. Your username will be your Wellesley alias:
+    <form method="post" action="">
+        <p><label for="name">Name</label>
+            <input type="text" name="name"></p>
+        <p><label for="year">Class Year</label>
+            <input type="text" name="year"></p>
+        <p><label for="email">Wellesley Email</label>
+            <input type="text" name="email"></p>
+        <p><label for="password">Password</label>
+            <input type="password" name="password"></p>
+        <p><label for="verify">Retype Password</label>
+            <input type="password" name="verify"></p>
+        <p><input type="submit" name='submit' value="sign up"></p>
+    </form></p>
+</body>
+</html>

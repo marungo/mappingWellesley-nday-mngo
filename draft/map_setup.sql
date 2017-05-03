@@ -8,7 +8,7 @@ create table wellesley_people(
 	email varchar(22) not null, -- wwellesle@wellesley.edu
 	nm varchar(30) not null,
 	password varchar(50) not null, -- encrypted eventually?
-	yr varchar(4) -- graduation year! :D 
+	yr int -- graduation year! :D 
 	)
 	-- table constraint
 	ENGINE = InnoDB;

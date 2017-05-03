@@ -1,6 +1,6 @@
 # hwk6: MR Ngo
 from __future__ import print_function
-from flask import Flask, render_template, redirect, url_for, request, flash
+from flask import Flask, render_template, redirect, url_for, request, flash, session
 # from flask_googlemaps import GoogleMaps
 import os
 import sys
@@ -10,9 +10,6 @@ import queries
 app = Flask(__name__)
 app.secret_key = '39tsfkajie' # for flashing
 # GoogleMaps(app, key='AIzaSyA-nT9fP4I7GrFPu_J-V-5ajx1Esns2aNk')
-
-# Global variable to avoid hacking via entering username directly in URL
-logged_in = False
 
 # URL for map page for a logged in user
 @app.route('/<username>', methods=['POST', 'GET'])
@@ -29,8 +26,7 @@ def map(username):
 			conn = queries.getConn()
 			worked = queries.insertAnecdote(conn,title,content,lat,lng,username)
 	
-	global logged_in	
-	if not logged_in:
+	if 'username' not in session:
 		flash("you need to log in!")
 		return redirect(url_for('login'))
 	conn = queries.getConn()
@@ -41,26 +37,54 @@ def map(username):
 @app.route('/login/', methods=["GET", "POST"])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
-        passwd = request.form['password']
-        conn = queries.getConn()
-        correct = queries.checkCredentials(conn,username,passwd)
-        if correct:
-        	global logged_in
-        	logged_in = True
-        	return redirect(url_for('map', username=username))
-        else:
-            flash("Sorry; incorrect")
-            return render_template('login.html')
+    	if request.form['submit'] == 'login':
+	        username = request.form['username']
+	        passwd = request.form['password']
+	        conn = queries.getConn()
+	        correct = queries.checkCredentials(conn,username,passwd)
+	        if correct:
+	        	session['username'] = request.form['username']
+	        	return redirect(url_for('map', username=username))
+	        else:
+	            flash("Sorry; incorrect")
+	            return render_template('login.html')
+        elif request.form['submit'] == 'sign up':
+        	print("sign up button pressed")
+        	return redirect(url_for('signup'))
     return render_template('login.html')
+
+@app.route('/signup/', methods=["GET", "POST"])
+def signup():
+	if request.method == 'POST':
+
+		name = request.form['name']
+		year = request.form['year']
+		email = request.form['email']
+		password = request.form['password']
+		verify = request.form['verify']
+		username = email.split('@')[0]
+
+		conn = queries.getConn()
+		response = queries.addUser(conn,name,email,year,password,verify)
+		if response == 0:
+			flash('Username is taken. Either you already signed up or that is not your correct email.')
+		elif response == 2:
+			flash('Your passwords did not match. Try again.')
+		else:
+			# flash('welcome,'+ name+'!')
+			session['username'] = username
+			return redirect(url_for('user',username=username))
+	return render_template('signup.html')
 
 @app.route('/user/<username>', methods=["GET", "POST"])
 def user(username):
 	if request.method=="POST":
-		return redirect(url_for('map', username=username))
-	
-	global logged_in
-	if not logged_in:
+		if request.form['submit'] == 'Go To Map':
+			return redirect(url_for('map', username=username))
+		elif request.form['submit'] == 'Logout':
+			session.pop('username', None)
+			return redirect(url_for('login'))
+	if 'username' not in session:
 		flash("You need to log in!")
 		return redirect(url_for('login'))
 	conn = queries.getConn()
