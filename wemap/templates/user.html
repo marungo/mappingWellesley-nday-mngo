@@ -14,6 +14,11 @@
     <form method='post' name="map">
       <input type='submit' name="submit" value="Go To Map"></input>
     </form>
+
+    <form method='post' name="logout">
+      <input type='submit' name="submit" value="Logout"></input>
+    </form>
+    
     <h2>Welcome {{ user.nm }}! Here's your post history: </h2>
     {% for anecdote in anecdotes %}
         <h3>{{ anecdote.title }}</h3>
