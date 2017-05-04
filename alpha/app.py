@@ -23,8 +23,17 @@ def map(username):
 			lng = request.form['lng']
 			title = request.form['title']
 			content = request.form['content']
-			conn = queries.getConn()
-			worked = queries.insertAnecdote(conn,title,content,lat,lng,username)
+			try:
+				author = request.form['anon']
+			except:
+				author = username
+
+			info = [lat,lng,title,content];
+			if "" in info:
+				flash("please select a location, give a title and write your anecdote!");
+			else:
+				conn = queries.getConn()
+				worked = queries.insertAnecdote(conn,title,content,lat,lng,autho)
 	
 	if 'username' not in session:
 		flash("you need to log in!")
@@ -62,8 +71,12 @@ def signup():
 		email = request.form['email']
 		password = request.form['password']
 		verify = request.form['verify']
-		username = email.split('@')[0]
 
+		if "@wellesley.edu" not in email:
+			flash('Email must be a valid Wellesley Email')
+			return render_template('signup.html')
+
+		username = email.split('@')[0]
 		conn = queries.getConn()
 		response = queries.addUser(conn,name,email,year,password,verify)
 		if response == 0:

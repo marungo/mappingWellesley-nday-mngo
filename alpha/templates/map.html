@@ -5,13 +5,11 @@
 <html>
   <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
-    <!-- <script type="text/javascript" src="map.js"></script> -->
     <style>
        #map {
         height: 400px;
         width: 100%;
        }
-
        h2 {
         text-align: center;
        }
@@ -36,7 +34,7 @@
       <input type='submit' name="submit" value="Go To Your Profile">
     </form>
 
-    <!-- <input id="pac-input" class="controls" type="text" placeholder="Search Box"> -->
+    <input id="pac-input" class="controls" type="text" placeholder="Search Box">
 
 
     <!-- ADD FORM FOR INPUTTING INFO FOR AN INFOWINDOW -->
@@ -46,11 +44,9 @@
 
       <p>Contents: <textarea name='content' id='content' rows='5' cols='50' default='describe your experience'></textarea></p>
 
-      <p>Lat: <input type="number" name="lat" step="0.001" value="">
-      Lng: <input type="number" name="lng" step="0.001" value=""></p>
-<!--       <input type="hidden" name="lat" value="">
-      <input type="hidden" name="lat" value=""> -->
-
+      <p><input type="hidden" name="lat" id="lat" step="0.00001" value="">
+      <input type="hidden" name="lng" id="lng" step="0.00001" value=""></p>
+      <p><input type='checkbox' name='anon' id='anon' value='wwellesl'> Make this post anonymous</p>
       <input type="submit" name="submit" id="btnaddmarker" value="add marker">
     </form>
     <br>
@@ -59,6 +55,7 @@
     <script type="text/javascript">
 
       var map;
+      var allMarkers = [];
 
       function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
@@ -67,69 +64,76 @@
           mapTypeId: 'roadmap'
         });
 
+        var unselected = 'http://maps.google.com/mapfiles/kml/pal3/icon57.png';
+
         {% for anecdote in anecdotes %}
-          addmarker( {{ anecdote.lat }},{{ anecdote.lng }},"{{ anecdote['title'] }}","{{ anecdote['content'] }}");
+          addmarker( {{ anecdote.lat }},{{ anecdote.lng }},"{{ anecdote['title'] }}","{{ anecdote['content'] }}", unselected);
         {% endfor %}
 
-        // // Create the search box and link it to the UI element.
-        // var input = document.getElementById('pac-input');
-        // var searchBox = new google.maps.places.SearchBox(input);
-        // map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+        // Create the search box and link it to the UI element.
+        var input = document.getElementById('pac-input');
+        var searchBox = new google.maps.places.SearchBox(input);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+        // Bias the SearchBox results towards current map's viewport.
+        map.addListener('bounds_changed', function() {
+          searchBox.setBounds(map.getBounds());
+        });
+        var markers = [];
+        // Listen for the event fired when the user selects a prediction and retrieve
+        // more details for that place.
+        searchBox.addListener('places_changed', function() {
+          var places = searchBox.getPlaces();
+          if (places.length == 0) {
+            return;
+          }
+          console.log(places);
+          // Clear out the old markers.
+          markers.forEach(function(marker) {
+            marker.setMap(null);
+          });
+          markers = [];
+          // For each place, get the icon, name and location.
+          var bounds = new google.maps.LatLngBounds();
+          places.forEach(function(place) {
+            if (!place.geometry) {
+              console.log("Returned place contains no geometry");
+              return;
+            }
+            // Create a marker for each place.
+            var marker = new google.maps.Marker({
+              map: map,
+              title: place.name,
+              position: place.geometry.location,
+              icon: 'http://maps.google.com/mapfiles/kml/pal3/icon57.png'
+            });
 
+            markers.push(marker);
 
-        // // Bias the SearchBox results towards current map's viewport.
-        // map.addListener('bounds_changed', function() {
-        //   searchBox.setBounds(map.getBounds());
-        // });
+            marker.addListener('click', function() {
+              selectMarker(markers, marker);
+            });
 
-        // var markers = [];
-        // // Listen for the event fired when the user selects a prediction and retrieve
-        // // more details for that place.
-        // searchBox.addListener('places_changed', function() {
-        //   var places = searchBox.getPlaces();
+            selectMarker(markers, marker);
 
-        //   if (places.length == 0) {
-        //     return;
-        //   }
+            var latlng = place.geometry.location;
+            document.getElementById("lat").value = latlng.lat().toFixed(5);
+            document.getElementById("lng").value = latlng.lng().toFixed(5);
 
-        //   console.log(places);
+            if (place.geometry.viewport) {
+              // Only geocodes have viewport.
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+          });
 
-        //   // Clear out the old markers.
-        //   markers.forEach(function(marker) {
-        //     marker.setMap(null);
-        //   });
-        //   markers = [];
-
-        //   // For each place, get the icon, name and location.
-        //   var bounds = new google.maps.LatLngBounds();
-        //   places.forEach(function(place) {
-        //     if (!place.geometry) {
-        //       console.log("Returned place contains no geometry");
-        //       return;
-        //     }
-        //     // Create a marker for each place.
-        //     markers.push(new google.maps.Marker({
-        //       map: map,
-        //       title: place.name,
-        //       position: place.geometry.location
-        //     }));
-
-        //     var latlng = place.geometry.location;
-        //     document.getElementById("lat").value = latlng.lat();
-        //     document.getElementById("lng").value = latlng.lng();
-
-        //     if (place.geometry.viewport) {
-        //       // Only geocodes have viewport.
-        //       bounds.union(place.geometry.viewport);
-        //     } else {
-        //       bounds.extend(place.geometry.location);
-        //     }
-        //   });
-        //   map.fitBounds(bounds);
-        // });
+          
+          map.fitBounds(bounds);
+        });
       }
 
       function addmarker(lat,lng,title,content) {
+          allMarkers.push(marker);
           contentString = "<h3>"+title+"</h3>"+
                           "<p>"+content+"</p>";
           var infowindow = new google.maps.InfoWindow({
@@ -139,15 +143,29 @@
           var marker = new google.maps.Marker({
               position: {lat:lat, lng:lng},
               title: 'new marker',
-              map: map
+              map: map,
+              icon: 'http://maps.google.com/mapfiles/kml/pushpin/blue-pushpin.png'
           });
-
-          console.log("added marker at ", lat,lng);
 
           map.setCenter(marker.getPosition());
           marker.addListener('click', function() {
-            infowindow.open(map,marker)
-          })
+            infowindow.open(map,marker);
+          });
+      }
+
+      function selectMarker(markers, marker) {
+          // unselect all markers
+          var unselected = 'http://maps.google.com/mapfiles/kml/pal3/icon57.png';
+          markers.forEach(function(m) {
+            m.setIcon(unselected);
+          });
+          // select this one
+          marker.setIcon('http://maps.google.com/mapfiles/kml/paddle/blu-blank.png');
+
+          var latlng = marker.getPosition();
+          console.log(latlng);
+          document.getElementById("lat").value = latlng.lat();
+          document.getElementById("lng").value = latlng.lng();
       }
 
       $('#btnaddmarker').on('click', function() {
@@ -155,9 +173,9 @@
           var content = document.getElementById('content').value;
           var lat = document.getElementById('lat').value;
           var lng = document.getElementById('lng').value;
+          var pushpin = 'http://maps.google.com/mapfiles/kml/pushpin/blue-pushpin.png';
           addmarker(lat,lng,title,content);
-      })
-
+      });
     </script> 
 
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-nT9fP4I7GrFPu_J-V-5ajx1Esns2aNk&callback=initMap&libraries=places" type="text/javascript"></script>
