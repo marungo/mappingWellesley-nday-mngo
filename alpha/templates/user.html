@@ -23,6 +23,11 @@
     {% for anecdote in anecdotes %}
         <h3>{{ anecdote.title }}</h3>
         <p>{{ anecdote.content }}</p>
+        <form method='post' name="anecdote" id="anecdote">
+          <input type='submit' name="submit" value="Update your anecdote">
+          <input type='submit' name="submit" value="Delete your anecdote">
+          <input type='hidden' name="aid" value="{{ anecdote.aid }}">
+        </form>
     {% endfor %}
   </body>
 </html>

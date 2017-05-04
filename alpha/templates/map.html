@@ -7,11 +7,19 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
     <style>
        #map {
-        height: 400px;
-        width: 100%;
+        height: 500px;
+        width: 75%;
+        float: left;
+       }
+       #anecdotes {
+        height:500px;
+        width: 24%;
+        overflow: auto;
+        float: right;
        }
        h2 {
         text-align: center;
+        display: inline-block;
        }
     </style>
   </head>
@@ -30,7 +38,7 @@
 
     <h2>Mapping Wellesley Connections</h2>
 
-    <form method='post' name="user">
+    <form method='post' name="user" id="profile">
       <input type='submit' name="submit" value="Go To Your Profile">
     </form>
 
@@ -51,7 +59,26 @@
     </form>
     <br>
 
+    <!-- Form for filtering anecdotes on map via username, tags, or keywords -->
+    <form action="" method="post" name="filter">
+      <h3>Filter anecdotes shown on map</h3>
+      <p>Enter a username: <input type='text' id='filtername' name='filtername' value=""></p>
+      <p>Select zero or more tags:</p>
+      <p><input type='checkbox' name='tag1' id='tag1' value='tag1name'> Tag1 name</p>
+      <p><input type='checkbox' name='tag2' id='tag2' value='tag2name'> Tag2 name</p>
+      <p><input type='checkbox' name='tag3' id='tag3' value='tag3name'> Tag3 name</p>
+      <p><input type='checkbox' name='tag4' id='tag4' value='tag4name'> Tag4 name</p>
+      <input type='submit' name='submit' id='filtersubmit' value="filter anecdotes">
+    </form>
+
     <div id="map"></div>
+    <div id="anecdotes">
+      <h2>Anecdotes currently on map:</h2>
+      {% for anecdote in anecdotes %}
+        <h3> {{ anecdote['title'] }} </h3>
+        <p> {{ anecdote['content'] }} </p>
+      {% endfor %}
+    </div>
     <script type="text/javascript">
 
       var map;

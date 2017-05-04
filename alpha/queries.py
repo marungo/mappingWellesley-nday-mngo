@@ -24,6 +24,7 @@ def insertAnecdote(conn,title,content,lat,lng,username):
     try:
     	curs.execute("INSERT into anecdotes (title,content,lat,lng,username)"+
     		"values (%s,%s,%s,%s,%s)",(title,content,lat,lng,username))
+        print (username)
     except MySQLdb.Error:
         print("error")
 
@@ -87,6 +88,15 @@ def addUser(conn,name,email,year,password,verify):
             return 1
         else:
             return 2
+
+
+################################################
+# 
+################################################
+def deleteAnecdote(conn,aid):
+    curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    curs.execute("DELETE from anecdotes where aid=%s", (aid,))
+    print ("deleted from anecdotes aid " + aid)
 
 ################################################
 # Gets database connection

@@ -15,10 +15,11 @@ app.secret_key = '39tsfkajie' # for flashing
 @app.route('/<username>', methods=['POST', 'GET'])
 def map(username):
 	if request.method=="POST":
+		conn = queries.getConn()
 		if request.form['submit'] == "Go To Your Profile":
 			# print("user button")
 			return redirect(url_for('user', username=username))
-		else:
+		elif request.form['submit'] == 'add marker':
 			lat = request.form['lat']
 			lng = request.form['lng']
 			title = request.form['title']
@@ -32,9 +33,22 @@ def map(username):
 			if "" in info:
 				flash("please select a location, give a title and write your anecdote!");
 			else:
-				conn = queries.getConn()
-				worked = queries.insertAnecdote(conn,title,content,lat,lng,autho)
-	
+				worked = queries.insertAnecdote(conn,title,content,lat,lng,author)
+		else:
+			filtername = request.form['filtername']
+			try:
+				tag1 = request.form['tag1']
+				tag2 = request.form['tag2']
+				tag3 = request.form['tag3']
+				tag4 = request.form['tag4']
+			except:
+				print ("at least one tag was not checked")
+			if filtername == "": # and no tags are selected - basically if nothing is selected but user wants to filter
+				flash("please enter a username or select tags if you want to filter the anecdotes shown on the map")
+			else:
+				filtered_anecdotes = queries.getAnecdotesByUser(conn, filtername)
+				return render_template('map.html', username=username, anecdotes=filtered_anecdotes)
+
 	if 'username' not in session:
 		flash("you need to log in!")
 		return redirect(url_for('login'))
@@ -62,6 +76,7 @@ def login():
         	return redirect(url_for('signup'))
     return render_template('login.html')
 
+# URL for signup page
 @app.route('/signup/', methods=["GET", "POST"])
 def signup():
 	if request.method == 'POST':
@@ -89,18 +104,24 @@ def signup():
 			return redirect(url_for('user',username=username))
 	return render_template('signup.html')
 
+# URL for user profile page
 @app.route('/user/<username>', methods=["GET", "POST"])
 def user(username):
+	conn = queries.getConn()
 	if request.method=="POST":
 		if request.form['submit'] == 'Go To Map':
 			return redirect(url_for('map', username=username))
 		elif request.form['submit'] == 'Logout':
 			session.pop('username', None)
 			return redirect(url_for('login'))
+		elif request.form['submit'] == "Update your anecdote":
+			return redirect(url_for('login'))
+		elif request.form['submit'] == "Delete your anecdote":
+			aid = request.form['aid']
+			queries.deleteAnecdote(conn,aid)
 	if 'username' not in session:
 		flash("You need to log in!")
 		return redirect(url_for('login'))
-	conn = queries.getConn()
 	anecdotes = queries.getAnecdotesByUser(conn, username)
 	user = queries.getUserInfo(conn,username)
 	return render_template('user.html', user=user, anecdotes=anecdotes)
