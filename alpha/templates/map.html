@@ -62,20 +62,21 @@
     <!-- Form for filtering anecdotes on map via username, tags, or keywords -->
     <form action="" method="post" name="filter">
       <h3>Filter anecdotes shown on map</h3>
-      <p>Enter a username: <input type='text' id='filtername' name='filtername' value=""></p>
-      <p>Select zero or more tags:</p>
-      <p><input type='checkbox' name='tag1' id='tag1' value='tag1name'> Tag1 name</p>
-      <p><input type='checkbox' name='tag2' id='tag2' value='tag2name'> Tag2 name</p>
-      <p><input type='checkbox' name='tag3' id='tag3' value='tag3name'> Tag3 name</p>
-      <p><input type='checkbox' name='tag4' id='tag4' value='tag4name'> Tag4 name</p>
+      Search by: 
+      <select name='filtertype'>
+        <option value="username">user</option>
+        <option value="keyword">keyword</option>
+      </select>
+      <input type='text' id='content' name='content' value="" width="200px">
       <input type='submit' name='submit' id='filtersubmit' value="filter anecdotes">
+      <br>
     </form>
 
     <div id="map"></div>
     <div id="anecdotes">
       <h2>Anecdotes currently on map:</h2>
       {% for anecdote in anecdotes %}
-        <h3> {{ anecdote['title'] }} </h3>
+        <h3> {{ anecdote['title'] }} ({{ anecdote['username'] }}) </h3>
         <p> {{ anecdote['content'] }} </p>
       {% endfor %}
     </div>
@@ -203,6 +204,7 @@
           var pushpin = 'http://maps.google.com/mapfiles/kml/pushpin/blue-pushpin.png';
           addmarker(lat,lng,title,content);
       });
+
     </script> 
 
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-nT9fP4I7GrFPu_J-V-5ajx1Esns2aNk&callback=initMap&libraries=places" type="text/javascript"></script>

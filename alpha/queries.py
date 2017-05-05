@@ -29,6 +29,16 @@ def insertAnecdote(conn,title,content,lat,lng,username):
         print("error")
 
 ################################################
+# Get all anecdotes where search input matches
+# anything in any titles or content of anecdotes
+################################################
+def getAnecdotesByKeyword(conn, content):
+    curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    content = "%"+content+"%"
+    curs.execute("SELECT * from anecdotes where content like %s or title like %s",(content,content))
+    return curs.fetchall()
+
+################################################
 # Get all anecdotes belonging to a certain user
 ################################################
 def getAnecdotesByUser(conn,username):

@@ -14,8 +14,8 @@ app.secret_key = '39tsfkajie' # for flashing
 # URL for map page for a logged in user
 @app.route('/<username>', methods=['POST', 'GET'])
 def map(username):
+	conn = queries.getConn()
 	if request.method=="POST":
-		conn = queries.getConn()
 		if request.form['submit'] == "Go To Your Profile":
 			# print("user button")
 			return redirect(url_for('user', username=username))
@@ -34,25 +34,21 @@ def map(username):
 				flash("please select a location, give a title and write your anecdote!");
 			else:
 				worked = queries.insertAnecdote(conn,title,content,lat,lng,author)
-		else:
-			filtername = request.form['filtername']
-			try:
-				tag1 = request.form['tag1']
-				tag2 = request.form['tag2']
-				tag3 = request.form['tag3']
-				tag4 = request.form['tag4']
-			except:
-				print ("at least one tag was not checked")
-			if filtername == "": # and no tags are selected - basically if nothing is selected but user wants to filter
-				flash("please enter a username or select tags if you want to filter the anecdotes shown on the map")
-			else:
-				filtered_anecdotes = queries.getAnecdotesByUser(conn, filtername)
+		elif request.form['submit'] == 'filter anecdotes':
+			content = request.form['content']
+			print(content)
+			if request.form['filtertype'] == 'username':
+				print('reached username')
+				filtered_anecdotes = queries.getAnecdotesByUser(conn, content)
+				return render_template('map.html', username=username, anecdotes=filtered_anecdotes)
+			elif request.form['filtertype'] == 'keyword':
+				print('reached keyword')
+				filtered_anecdotes = queries.getAnecdotesByKeyword(conn, content)
 				return render_template('map.html', username=username, anecdotes=filtered_anecdotes)
 
 	if 'username' not in session:
 		flash("you need to log in!")
 		return redirect(url_for('login'))
-	conn = queries.getConn()
 	anecdotes = queries.getAllAnecdotes(conn)
 	return render_template('map.html', username=username, anecdotes=anecdotes)
 
@@ -113,8 +109,6 @@ def user(username):
 			return redirect(url_for('map', username=username))
 		elif request.form['submit'] == 'Logout':
 			session.pop('username', None)
-			return redirect(url_for('login'))
-		elif request.form['submit'] == "Update your anecdote":
 			return redirect(url_for('login'))
 		elif request.form['submit'] == "Delete your anecdote":
 			aid = request.form['aid']
