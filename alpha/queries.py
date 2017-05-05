@@ -99,6 +99,13 @@ def addUser(conn,name,email,year,password,verify):
         else:
             return 2
 
+################################################
+# 
+################################################
+def updateAnecdote(conn,aid,title,content,author):
+    curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    curs.execute('UPDATE anecdotes set title=%s,content=%s,username=%s where aid=%s',
+        (title,content,author,aid))
 
 ################################################
 # 

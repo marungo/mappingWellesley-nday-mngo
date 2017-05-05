@@ -113,6 +113,16 @@ def user(username):
 		elif request.form['submit'] == "Delete your anecdote":
 			aid = request.form['aid']
 			queries.deleteAnecdote(conn,aid)
+		elif request.form['submit'] == 'update anecdote':
+			title = request.form['title']
+			content = request.form['content']
+			user = request.form['username']
+			aid = request.form['aid']
+			try:
+				author = request.form['anon']
+			except:
+				author = user			
+			queries.updateAnecdote(conn,aid,title,content,author)
 	if 'username' not in session:
 		flash("You need to log in!")
 		return redirect(url_for('login'))
