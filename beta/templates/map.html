@@ -1,0 +1,212 @@
+<!-- Google Maps API Key: -->
+<!-- AIzaSyA-nT9fP4I7GrFPu_J-V-5ajx1Esns2aNk -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <style>
+       #map {
+        height: 500px;
+        width: 75%;
+        float: left;
+       }
+       #anecdotes {
+        height:500px;
+        width: 24%;
+        overflow: auto;
+        float: right;
+       }
+       h2 {
+        text-align: center;
+        display: inline-block;
+       }
+    </style>
+  </head>
+  <body>
+
+    <!-- display flash messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div id="flashes">
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <h2>Mapping Wellesley Connections</h2>
+
+    <form method='post' name="user" id="profile">
+      <input type='submit' name="submit" value="Go To Your Profile">
+    </form>
+
+    <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+
+
+    <!-- ADD FORM FOR INPUTTING INFO FOR AN INFOWINDOW -->
+    <form action="" method="post" name="anecdote">
+      <h3>Add a Marker</h3>
+      <p>Title: <input type='text' id='title' name='title' value="" default='Randomly Met an Alumna on the train!'></p>
+
+      <p>Contents: <textarea name='content' id='content' rows='5' cols='50' default='describe your experience'></textarea></p>
+
+      <p><input type="hidden" name="lat" id="lat" step="0.00001" value="">
+      <input type="hidden" name="lng" id="lng" step="0.00001" value=""></p>
+      <p><input type='checkbox' name='anon' id='anon' value='wwellesl'> Make this post anonymous</p>
+      <input type="submit" name="submit" id="btnaddmarker" value="add marker">
+    </form>
+    <br>
+
+    <!-- Form for filtering anecdotes on map via username, tags, or keywords -->
+    <form action="" method="post" name="filter">
+      <h3>Filter anecdotes shown on map</h3>
+      Search by: 
+      <select name='filtertype'>
+        <option value="username">user</option>
+        <option value="keyword">keyword</option>
+      </select>
+      <input type='text' id='content' name='content' value="" width="200px">
+      <input type='submit' name='submit' id='filtersubmit' value="filter anecdotes">
+      <br>
+    </form>
+
+    <div id="map"></div>
+    <div id="anecdotes">
+      <h2>Anecdotes currently on map:</h2>
+      {% for anecdote in anecdotes %}
+        <h3> {{ anecdote['title'] }} ({{ anecdote['username'] }}) </h3>
+        <p> {{ anecdote['content'] }} </p>
+      {% endfor %}
+    </div>
+    <script type="text/javascript">
+
+      var map;
+      var allMarkers = [];
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 42, lng: -71},
+          zoom: 11,
+          mapTypeId: 'roadmap'
+        });
+
+        var unselected = 'http://maps.google.com/mapfiles/kml/pal3/icon57.png';
+
+        {% for anecdote in anecdotes %}
+          addmarker( {{ anecdote.lat }},{{ anecdote.lng }},"{{ anecdote['title'] }}","{{ anecdote['content'] }}", unselected);
+        {% endfor %}
+
+        // Create the search box and link it to the UI element.
+        var input = document.getElementById('pac-input');
+        var searchBox = new google.maps.places.SearchBox(input);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+        // Bias the SearchBox results towards current map's viewport.
+        map.addListener('bounds_changed', function() {
+          searchBox.setBounds(map.getBounds());
+        });
+        var markers = [];
+        // Listen for the event fired when the user selects a prediction and retrieve
+        // more details for that place.
+        searchBox.addListener('places_changed', function() {
+          var places = searchBox.getPlaces();
+          if (places.length == 0) {
+            return;
+          }
+          console.log(places);
+          // Clear out the old markers.
+          markers.forEach(function(marker) {
+            marker.setMap(null);
+          });
+          markers = [];
+          // For each place, get the icon, name and location.
+          var bounds = new google.maps.LatLngBounds();
+          places.forEach(function(place) {
+            if (!place.geometry) {
+              console.log("Returned place contains no geometry");
+              return;
+            }
+            // Create a marker for each place.
+            var marker = new google.maps.Marker({
+              map: map,
+              title: place.name,
+              position: place.geometry.location,
+              icon: 'http://maps.google.com/mapfiles/kml/pal3/icon57.png'
+            });
+
+            markers.push(marker);
+
+            marker.addListener('click', function() {
+              selectMarker(markers, marker);
+            });
+
+            selectMarker(markers, marker);
+
+            var latlng = place.geometry.location;
+            document.getElementById("lat").value = latlng.lat().toFixed(5);
+            document.getElementById("lng").value = latlng.lng().toFixed(5);
+
+            if (place.geometry.viewport) {
+              // Only geocodes have viewport.
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+          });
+
+          
+          map.fitBounds(bounds);
+        });
+      }
+
+      function addmarker(lat,lng,title,content) {
+          allMarkers.push(marker);
+          contentString = "<h3>"+title+"</h3>"+
+                          "<p>"+content+"</p>";
+          var infowindow = new google.maps.InfoWindow({
+            content: contentString
+          });
+
+          var marker = new google.maps.Marker({
+              position: {lat:lat, lng:lng},
+              title: 'new marker',
+              map: map,
+              icon: 'http://maps.google.com/mapfiles/kml/pushpin/blue-pushpin.png'
+          });
+
+          map.setCenter(marker.getPosition());
+          marker.addListener('click', function() {
+            infowindow.open(map,marker);
+          });
+      }
+
+      function selectMarker(markers, marker) {
+          // unselect all markers
+          var unselected = 'http://maps.google.com/mapfiles/kml/pal3/icon57.png';
+          markers.forEach(function(m) {
+            m.setIcon(unselected);
+          });
+          // select this one
+          marker.setIcon('http://maps.google.com/mapfiles/kml/paddle/blu-blank.png');
+
+          var latlng = marker.getPosition();
+          console.log(latlng);
+          document.getElementById("lat").value = latlng.lat();
+          document.getElementById("lng").value = latlng.lng();
+      }
+
+      $('#btnaddmarker').on('click', function() {
+          var title = document.getElementById('title').value;
+          var content = document.getElementById('content').value;
+          var lat = document.getElementById('lat').value;
+          var lng = document.getElementById('lng').value;
+          var pushpin = 'http://maps.google.com/mapfiles/kml/pushpin/blue-pushpin.png';
+          addmarker(lat,lng,title,content);
+      });
+
+    </script> 
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-nT9fP4I7GrFPu_J-V-5ajx1Esns2aNk&callback=initMap&libraries=places" type="text/javascript"></script>
+  </body>
+</html>
