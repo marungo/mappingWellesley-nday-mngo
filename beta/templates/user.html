@@ -52,7 +52,12 @@
     
     <h2>Welcome {{ user.nm }}! Here's your post history: </h2>
     {% for anecdote in anecdotes %}
-        <h3>{{ anecdote.title }}</h3>
+        <h3>
+          {{ anecdote.title }}
+          {% if anecdote.anonymous is 1 %}
+            (anonymous)
+          {% endif %}
+        </h3>
         <p>{{ anecdote.content }}</p>
         <button type='button' id='{{ anecdote.aid }}' class="update">Update your anecdote</button>
 

@@ -10,8 +10,8 @@ import queries
 app = Flask(__name__)
 app.secret_key = '39tsfkajie' # for flashing
 # GoogleMaps(app, key='AIzaSyA-nT9fP4I7GrFPu_J-V-5ajx1Esns2aNk')
-login_manager = LoginManager()
-login_manager.init_app(app)
+# login_manager = LoginManager()
+# login_manager.init_app(app)
 
 
 # URL for map page for a logged in user
@@ -28,15 +28,15 @@ def map(username):
 			title = request.form['title']
 			content = request.form['content']
 			try:
-				author = request.form['anon']
+				anonymous = int(request.form['anon'])
 			except:
-				author = username
+				anonymous = 0
 
 			info = [lat,lng,title,content];
 			if "" in info:
 				flash("please select a location, give a title and write your anecdote!");
 			else:
-				worked = queries.insertAnecdote(conn,title,content,lat,lng,author)
+				worked = queries.insertAnecdote(conn,title,content,lat,lng,username,anonymous)
 		elif request.form['submit'] == 'filter anecdotes':
 			content = request.form['content']
 			print(content)

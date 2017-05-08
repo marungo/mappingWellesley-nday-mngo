@@ -19,11 +19,11 @@ def insertUser(conn,nm,email,password,year):
 ################################################
 # Insert anecdote entered on map into database
 ################################################
-def insertAnecdote(conn,title,content,lat,lng,username):
+def insertAnecdote(conn,title,content,lat,lng,username,anonymous):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     try:
-    	curs.execute("INSERT into anecdotes (title,content,lat,lng,username)"+
-    		"values (%s,%s,%s,%s,%s)",(title,content,lat,lng,username))
+    	curs.execute("INSERT into anecdotes (title,content,lat,lng,username,anonymous)"+
+    		"values (%s,%s,%s,%s,%s,%s)",(title,content,lat,lng,username,anonymous))
         print (username)
     except MySQLdb.Error:
         print("error")
