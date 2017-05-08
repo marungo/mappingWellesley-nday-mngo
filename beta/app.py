@@ -14,6 +14,64 @@ import queries
 app = Flask(__name__)
 app.secret_key = '39tsfkajie' # for flashing
 
+# URL for WeMap: Mapping Wellesley Connections homepage
+@app.route('/home/', methods=["GET", "POST"])
+def home():
+	if request.method == 'POST':
+		if request.form['submit'] == "Login":
+			return redirect(url_for('login'))
+		if request.form['submit'] == "Sign Up":
+			return redirect(url_for('signup'))
+	return render_template('home.html')
+
+# URL for login page
+@app.route('/login/', methods=["GET", "POST"])
+def login():
+    if request.method == 'POST':
+    	if request.form['submit'] == 'login':
+	        username = request.form['username']
+	        password = request.form['password']
+	        conn = queries.getConn()
+	        if (username == "") or (password == ""):
+	        	flash("Please enter your username and password!")
+	        	return render_template('login.html')
+	        elif queries.checkCredentials(conn,username,password):
+	        	session['username'] = request.form['username']
+	        	print(session.keys())
+	        	return redirect(url_for('map', username=username))
+	        else:
+	            flash("Sorry; incorrect")
+	            return render_template('login.html')
+    return render_template('login.html')
+
+# URL for signup page
+@app.route('/signup/', methods=["GET", "POST"])
+def signup():
+	if request.method == 'POST':
+
+		name = request.form['name']
+		year = request.form['year']
+		email = request.form['email']
+		password = request.form['password']
+		verify = request.form['verify']
+
+		if "@wellesley.edu" not in email:
+			flash('Email must be a valid Wellesley Email')
+			return render_template('signup.html')
+
+		username = email.split('@')[0]
+		conn = queries.getConn()
+		response = queries.addUser(conn,name,email,year,password,verify)
+		if response == 0:
+			flash('Username is taken. Either you already signed up or that is not your correct email.')
+		elif response == 2:
+			flash('Your passwords did not match. Try again.')
+		else:
+			# flash('welcome,'+ name+'!')
+			session['username'] = username
+			return redirect(url_for('user',username=username))
+	return render_template('signup.html')
+
 # URL for map page for a logged in user
 @app.route('/<username>', methods=['POST', 'GET'])
 def map(username):
@@ -55,54 +113,6 @@ def map(username):
 	anecdotes = queries.getAllAnecdotes(conn)
 	return render_template('map.html', username=username, anecdotes=anecdotes)
 
-# URL for login page
-@app.route('/login/', methods=["GET", "POST"])
-def login():
-    if request.method == 'POST':
-    	if request.form['submit'] == 'login':
-	        username = request.form['username']
-	        password = request.form['password']
-	        conn = queries.getConn()
-	        if queries.checkCredentials(conn,username,password):
-	        	session['username'] = request.form['username']
-	        	print(session.keys())
-	        	return redirect(url_for('map', username=username))
-	        else:
-	            flash("Sorry; incorrect")
-	            return render_template('login.html')
-        elif request.form['submit'] == 'sign up':
-        	print("sign up button pressed")
-        	return redirect(url_for('signup'))
-    return render_template('login.html')
-
-# URL for signup page
-@app.route('/signup/', methods=["GET", "POST"])
-def signup():
-	if request.method == 'POST':
-
-		name = request.form['name']
-		year = request.form['year']
-		email = request.form['email']
-		password = request.form['password']
-		verify = request.form['verify']
-
-		if "@wellesley.edu" not in email:
-			flash('Email must be a valid Wellesley Email')
-			return render_template('signup.html')
-
-		username = email.split('@')[0]
-		conn = queries.getConn()
-		response = queries.addUser(conn,name,email,year,password,verify)
-		if response == 0:
-			flash('Username is taken. Either you already signed up or that is not your correct email.')
-		elif response == 2:
-			flash('Your passwords did not match. Try again.')
-		else:
-			# flash('welcome,'+ name+'!')
-			session['username'] = username
-			return redirect(url_for('user',username=username))
-	return render_template('signup.html')
-
 # URL for user profile page
 @app.route('/user/<username>', methods=["GET", "POST"])
 def user(username):
@@ -112,7 +122,7 @@ def user(username):
 			return redirect(url_for('map', username=username))
 		elif request.form['submit'] == 'Logout':
 			session.pop('username', None)
-			return redirect(url_for('login'))
+			return redirect(url_for('home'))
 		elif request.form['submit'] == "Delete your anecdote":
 			aid = request.form['aid']
 			queries.deleteAnecdote(conn,aid)
@@ -122,10 +132,10 @@ def user(username):
 			user = request.form['username']
 			aid = request.form['aid']
 			try:
-				author = request.form['anon']
+				anonymous = request.form['anon']
 			except:
-				author = user			
-			queries.updateAnecdote(conn,aid,title,content,author)
+				anonymous = 0
+			queries.updateAnecdote(conn,aid,title,content,user,anonymous)
 	if 'username' not in session:
 		flash("You need to log in!")
 		return redirect(url_for('login'))

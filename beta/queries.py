@@ -101,10 +101,10 @@ def addUser(conn,name,email,year,password,verify):
 ################################################
 # 
 ################################################
-def updateAnecdote(conn,aid,title,content,author):
+def updateAnecdote(conn,aid,title,content,author,anonymous):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
-    curs.execute('UPDATE anecdotes set title=%s,content=%s,username=%s where aid=%s',
-        (title,content,author,aid))
+    curs.execute('UPDATE anecdotes set title=%s,content=%s,username=%s,anonymous=%s where aid=%s',
+        (title,content,author,anonymous,aid))
 
 ################################################
 # 
