@@ -1,11 +1,10 @@
 # WeMap: Mapping Wellesley Connections
 # Authors: MR Ngo and Naomi Day
-
 import sys
 import MySQLdb
 import dbconn2
 from mngo_dsn import dsn
-
+from werkzeug.security import generate_password_hash, check_password_hash
 
 ################################################
 # Add users to database
@@ -59,8 +58,8 @@ def getAllAnecdotes(conn):
 ################################################
 def checkCredentials(conn,username,password):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
-    curs.execute("SELECT count(*) as count from wellesley_people where username=%s and password=%s",(username,password))
-    return curs.fetchone()['count'] == 1    
+    curs.execute("SELECT password from wellesley_people where username=%s",(username,))
+    return check_password_hash(curs.fetchone()['password'],password)
 
 ################################################
 # Upon login, get all user info from database
@@ -94,7 +93,8 @@ def addUser(conn,name,email,year,password,verify):
         return 0
     else:
         if password == verify:
-            insertUser(conn,name,email,password,year)
+            hashed_password = generate_password_hash(password)
+            insertUser(conn,name,email,hashed_password,year)
             return 1
         return 2
 

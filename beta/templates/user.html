@@ -54,7 +54,7 @@
     {% for anecdote in anecdotes %}
         <h3>
           {{ anecdote.title }}
-          {% if anecdote.anonymous is 1 %}
+          {% if anecdote.anonymous == 1 %}
             (anonymous)
           {% endif %}
         </h3>

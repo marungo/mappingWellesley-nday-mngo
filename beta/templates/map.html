@@ -78,7 +78,7 @@
       {% for anecdote in anecdotes %}
         <h3>
           {{ anecdote['title'] }} 
-          {% if anecdote['anonymous'] == "0" %}
+          {% if anecdote['anonymous'] == 0 %}
             ({{ anecdote['username'] }})
           {% else %}
             (anonymous)

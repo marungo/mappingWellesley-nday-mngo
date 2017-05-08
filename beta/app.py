@@ -1,18 +1,18 @@
-# hwk6: MR Ngo
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 from __future__ import print_function
 from flask import Flask, render_template, redirect, url_for, request, flash, session
-# from flask_googlemaps import GoogleMaps
+from flask_cas import CAS
+from werkzeug.security import generate_password_hash, check_password_hash
+
 import os
 import sys
+print(sys.getdefaultencoding())
 # my own set of mysql query and statement functions
 import queries
 
 app = Flask(__name__)
 app.secret_key = '39tsfkajie' # for flashing
-# GoogleMaps(app, key='AIzaSyA-nT9fP4I7GrFPu_J-V-5ajx1Esns2aNk')
-# login_manager = LoginManager()
-# login_manager.init_app(app)
-
 
 # URL for map page for a logged in user
 @app.route('/<username>', methods=['POST', 'GET'])
@@ -61,11 +61,11 @@ def login():
     if request.method == 'POST':
     	if request.form['submit'] == 'login':
 	        username = request.form['username']
-	        passwd = request.form['password']
+	        password = request.form['password']
 	        conn = queries.getConn()
-	        correct = queries.checkCredentials(conn,username,passwd)
-	        if correct:
+	        if queries.checkCredentials(conn,username,password):
 	        	session['username'] = request.form['username']
+	        	print(session.keys())
 	        	return redirect(url_for('map', username=username))
 	        else:
 	            flash("Sorry; incorrect")
