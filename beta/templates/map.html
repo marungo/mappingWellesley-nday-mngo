@@ -6,21 +6,67 @@
   <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
     <style>
-       #map {
+      /* The Modal (background) */
+      .modal {
+          display: none; /* Hidden by default */
+          position: fixed; /* Stay in place */
+          z-index: 1; /* Sit on top */
+          left: 0;
+          top: 0;
+          width: 100%; /* Full width */
+          height: 100%; /* Full height */
+          overflow: auto; /* Enable scroll if needed */
+          background-color: rgb(0,0,0); /* Fallback color */
+          background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+      }
+      /* Modal Content/Box */
+      .modal-content {
+          background-color: #fefefe;
+          margin: 15% auto; /* 15% from the top and centered */
+          padding: 20px;
+          border: 1px solid #888;
+          width: 80%; /* Could be more or less, depending on screen size */
+      }
+      /* The Close Button */
+      .close {
+          color: #aaa;
+          float: right;
+          font-size: 28px;
+          font-weight: bold;
+      }
+      .close:hover,
+      .close:focus {
+          color: black;
+          text-decoration: none;
+          cursor: pointer;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      #wrapper {
+
+      }
+      
+      #map {
         height: 500px;
-        width: 75%;
-        float: left;
-       }
-       #anecdotes {
+        width: 73%;
+        float: right;
+      }
+      
+      #anecdotes {
         height:500px;
         width: 24%;
         overflow: auto;
-        float: right;
-       }
-       h2 {
+        float: left;
+      }
+
+      h2 {
         text-align: center;
         display: inline-block;
-       }
+      }
+
     </style>
   </head>
   <body>
@@ -36,61 +82,82 @@
       {% endif %}
     {% endwith %}
 
-    <h2>Mapping Wellesley Connections</h2>
-
+    <h1>WeMap</h1>
     <form method='post' name="user" id="profile">
       <input type='submit' name="submit" value="Go To Your Profile">
     </form>
 
-    <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+    <div id="myModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <!-- ADD FORM FOR INPUTTING INFO FOR AN INFOWINDOW -->
+        <form action="" method="post" name="anecdote">
+          <h3>Add a Marker</h3>
+          <p>Title: <input type='text' id='title' name='title' value="" default='Randomly Met an Alumna on the train!'></p>
 
+          <p>Contents: <textarea name='content' id='content' rows='5' cols='50' default='describe your experience'></textarea></p>
 
-    <!-- ADD FORM FOR INPUTTING INFO FOR AN INFOWINDOW -->
-    <form action="" method="post" name="anecdote">
-      <h3>Add a Marker</h3>
-      <p>Title: <input type='text' id='title' name='title' value="" default='Randomly Met an Alumna on the train!'></p>
-
-      <p>Contents: <textarea name='content' id='content' rows='5' cols='50' default='describe your experience'></textarea></p>
-
-      <p><input type="hidden" name="lat" id="lat" step="0.00001" value="">
-      <input type="hidden" name="lng" id="lng" step="0.00001" value=""></p>
-      <p><input type='checkbox' name='anon' id='anon' value='1'> Make this post anonymous</p>
-      <input type="submit" name="submit" id="btnaddmarker" value="add marker">
-    </form>
-    <br>
-
-    <!-- Form for filtering anecdotes on map via username, tags, or keywords -->
-    <form action="" method="post" name="filter">
-      <h3>Filter anecdotes shown on map</h3>
-      Search by: 
-      <select name='filtertype'>
-        <option value="username">user</option>
-        <option value="keyword">keyword</option>
-      </select>
-      <input type='text' id='content' name='content' value="" width="200px">
-      <input type='submit' name='submit' id='filtersubmit' value="filter anecdotes">
-      <br>
-    </form>
-
-    <div id="map"></div>
-    <div id="anecdotes">
-      <h2>Anecdotes currently on map:</h2>
-      {% for anecdote in anecdotes %}
-        <h3>
-          {{ anecdote['title'] }} 
-          {% if anecdote['anonymous'] == 0 %}
-            ({{ anecdote['username'] }})
-          {% else %}
-            (anonymous)
-          {% endif %}
-        </h3>
-        <p> {{ anecdote['content'] }} </p>
-      {% endfor %}
+          <p><input type="hidden" name="lat" id="lat" step="0.00001" value="">
+          <input type="hidden" name="lng" id="lng" step="0.00001" value=""></p>
+          <p><input type='checkbox' name='anon' id='anon' value='1'> Make this post anonymous</p>
+          <input type="submit" name="submit" id="btnaddmarker" value="add marker">
+        </form>
+      </div>
     </div>
+
+    <div id='wrapper'>
+
+      <div id="anecdotes">
+          <!-- Form for filtering anecdotes on map via username, tags, or keywords -->
+          <form action="" method="post" name="filter">
+            <h3>Filter anecdotes shown on map</h3>
+            Search by: 
+            <select name='filtertype'>
+              <option value="username">user</option>
+              <option value="keyword">keyword</option>
+            </select>
+            <input type='text' id='content' name='content' value="" width="200px">
+            <input type='submit' name='submit' id='filtersubmit' value="filter anecdotes">
+            <br>
+          </form>
+        <h2>Anecdotes currently on map:</h2>
+        {% for anecdote in anecdotes %}
+          <h3>
+            {{ anecdote['title'] }} 
+            {% if anecdote['anonymous'] == 0 %}
+              ({{ anecdote['username'] }})
+            {% else %}
+              (anonymous)
+            {% endif %}
+          </h3>
+          <p> {{ anecdote['content'] }} </p>
+        {% endfor %}
+    </div>
+
+      <div id="mwrapper">
+        <button type='button' id='addanecdote' disabled>Add Anecdote</button>
+      </div>
+
+      <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+      <div id="map"></div>
+    </div>
+
     <script type="text/javascript">
 
       var map;
       var allMarkers = [];
+
+      var modal = document.getElementById('myModal');
+
+     $("#addanecdote").click(function() {
+            modal.style.display = "block";
+      });
+
+      var span = document.getElementsByClassName("close")[0];
+      span.onclick = function() {
+          modal.style.display = "none";
+      }
 
       function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
@@ -201,6 +268,7 @@
           console.log(latlng);
           document.getElementById("lat").value = latlng.lat();
           document.getElementById("lng").value = latlng.lng();
+          document.getElementById('addanecdote').disabled = false;
       }
 
       $('#btnaddmarker').on('click', function() {
