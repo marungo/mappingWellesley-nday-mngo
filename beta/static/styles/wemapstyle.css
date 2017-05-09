@@ -75,4 +75,10 @@ h2 {
   text-align: center;
   display: inline-block;
 }
+
+#menu {
+  position: fixed;
+  right: 20px;
+  /*width: 30%;*/
+}
 /* END MAP.HTML STYLING */

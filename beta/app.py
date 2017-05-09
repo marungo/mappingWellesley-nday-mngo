@@ -77,9 +77,13 @@ def signup():
 def map(username):
 	conn = queries.getConn()
 	if request.method=="POST":
-		if request.form['submit'] == "Go To Your Profile":
-			# print("user button")
-			return redirect(url_for('user', username=username))
+		if request.form['submit'] == 'Go To Map':
+			return redirect(url_for('map', username=username))
+		elif request.form['submit'] == 'Logout':
+			session.pop('username', None)
+			return redirect(url_for('home'))
+		elif request.form['submit'] == 'Go to Profile':
+			return redirect(url_for('user',username=session['username']))
 		elif request.form['submit'] == 'add marker':
 			lat = request.form['lat']
 			lng = request.form['lng']
@@ -123,7 +127,7 @@ def user(username):
 			session.pop('username', None)
 			return redirect(url_for('home'))
 		elif request.form['submit'] == 'Go to Profile':
-			return redirect(url_for('user',username=username))
+			return redirect(url_for('user',username=session['username']))
 		elif request.form['submit'] == "Delete your anecdote":
 			aid = request.form['aid']
 			queries.deleteAnecdote(conn,aid)
