@@ -67,6 +67,12 @@
         display: inline-block;
       }
 
+      #menu {
+        position: fixed;
+        right: 20px;
+        /*width: 30%;*/
+      }
+
     </style>
   </head>
   <body>
@@ -82,10 +88,16 @@
       {% endif %}
     {% endwith %}
 
+    <div id='menu' width='500px'>
+      <form method='post' name="map">
+        <input type='submit' name="submit" value="Go To Map"></input>
+        <input type='submit' name="submit" value="Logout"></input>
+        <input type='submit' name="submit" value="Go to Profile"></input>
+      </form>
+    </div>
+
     <h1>WeMap</h1>
-    <form method='post' name="user" id="profile">
-      <input type='submit' name="submit" value="Go To Your Profile">
-    </form>
+
 
     <div id="myModal" class="modal">
       <!-- Modal content -->
