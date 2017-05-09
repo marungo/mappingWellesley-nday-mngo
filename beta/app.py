@@ -106,9 +106,8 @@ def map(username):
 				print('reached keyword')
 				filtered_anecdotes = queries.getAnecdotesByKeyword(conn, content)
 				return render_template('map.html', username=username, anecdotes=filtered_anecdotes)
-
 	if 'username' not in session:
-		flash("you need to log in!")
+		flash("You need to log in!")
 		return redirect(url_for('login'))
 	anecdotes = queries.getAllAnecdotes(conn)
 	return render_template('map.html', username=username, anecdotes=anecdotes)
@@ -123,6 +122,8 @@ def user(username):
 		elif request.form['submit'] == 'Logout':
 			session.pop('username', None)
 			return redirect(url_for('home'))
+		elif request.form['submit'] == 'Go to Profile':
+			return redirect(url_for('user',username=username))
 		elif request.form['submit'] == "Delete your anecdote":
 			aid = request.form['aid']
 			queries.deleteAnecdote(conn,aid)
@@ -139,9 +140,11 @@ def user(username):
 	if 'username' not in session:
 		flash("You need to log in!")
 		return redirect(url_for('login'))
+	print(username != session['username'])
+	logged_in = username == session['username']
 	anecdotes = queries.getAnecdotesByUser(conn, username)
 	user = queries.getUserInfo(conn,username)
-	return render_template('user.html', user=user, anecdotes=anecdotes)
+	return render_template('user.html', user=user, anecdotes=anecdotes, logged_in=logged_in)
 
 
 if __name__ == '__main__':

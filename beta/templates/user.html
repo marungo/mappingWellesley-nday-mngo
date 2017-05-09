@@ -11,6 +11,7 @@
             z-index: 1; /* Sit on top */
             left: 0;
             top: 0;
+            width: 100%; /* Full width */
             height: 100%; /* Full height */
             overflow: auto; /* Enable scroll if needed */
             background-color: rgb(0,0,0); /* Fallback color */
@@ -41,16 +42,23 @@
   </head>
   <body id="body">
 
-    <form method='post' name="map">
-      <input type='submit' name="submit" value="Go To Map"></input>
-    </form>
-
-    <form method='post' name="logout">
-      <input type='submit' name="submit" value="Logout"></input>
-    </form>
+    <div id='menu'>
+      <form method='post' name="map">
+        <input type='submit' name="submit" value="Go To Map"></input>
+        <input type='submit' name="submit" value="Logout"></input>
+        <input type='submit' name="submit" value="Go to Profile"></input>
+      </form>
+    </div>
     
-    <h2>Welcome {{ user.nm }}! Here's your post history: </h2>
+    {% if logged_in %}
+        <h2>Welcome {{ user.nm }}! Here's your post history: </h2>
+    {% else %}
+        <h2> {{ user.nm }} </h2>
+    {% endif %}
+
     {% for anecdote in anecdotes %}
+
+      {% if logged_in %}
         <h3>
           {{ anecdote.title }}
           {% if anecdote.anonymous == 1 %}
@@ -58,12 +66,22 @@
           {% endif %}
         </h3>
         <p>{{ anecdote.content }}</p>
+
         <button type='button' id='{{ anecdote.aid }}' class="update">Update your anecdote</button>
 
         <form method='post' name="anecdote" id="anecdote">
           <input type='submit' name="submit" id='{{ anecdote.aid }}' class="delete" value="Delete your anecdote">
           <input type='hidden' name="aid" value="{{ anecdote.aid }}">
         </form>
+
+      {% else %}
+
+        {% if anecdote.anonymous == 0 %}
+          <h3> {{ anecdote.title }}</h3>
+          <p>{{ anecdote.content }}</p>        
+        {% endif %}
+
+      {% endif %}
 
     {% endfor %}
 
