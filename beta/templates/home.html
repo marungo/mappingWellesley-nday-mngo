@@ -3,43 +3,43 @@
 <head>
     <meta charset='utf-8'>
     <meta name=author content="Naomi Day and MR Ngo">   
-    <link rel="stylesheet" type="text/css" href="wemapstyle.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/wemapstyle.css') }}">
 </head>
 <body id="body">
 
-<!-- display flash messages -->
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <div id="flashes">
-    {% for message in messages %}
-      <p>{{ message }}</p>
-    {% endfor %}
+    <!-- display flash messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div id="flashes">
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+
+    <div id="main">
+        <h1 align="center">WeMap:<br>Mapping Wellesley Connections</h1>
+
+        <p align="center">Welcome to WeMap! <br><br></p>
+        <p align="left" style="padding-left:7%; padding-right:7%; text-align:justify">
+            <b>You:</b> a Wellesley affiliate (current student, graduate, professor, staff) <br>
+            <b>Us:</b> a team of Wellesley seniors looking to make connections in our communities <br>
+            <b>WeMap:</b> the Wellesley Network on a map! Once you sign up for our service (free!), you
+            will have access to a peer-created network that visualizes the connections between
+            Wellesley affiliates. You will be able to view the profiles and stories of Wellesley
+            individuals across the world. <br><br>
+            Questions: contact us at nday@ and mngo@ and we will be happy to chat!<br><br>
+        </p>
+        <p align="center">Click login or sign up to begin!</p><br>
+
+        <form method="post" action="" align="center">
+            <input type="submit" name="submit" value="Login" />
+            <input type="submit" name="submit" value="Sign Up" />
+        </form>
+
     </div>
-  {% endif %}
-{% endwith %}
-
-
-<div id="main">
-    <h1 align="center">WeMap:<br>Mapping Wellesley Connections</h1>
-
-    <p align="center">Welcome to WeMap! <br><br></p>
-    <p align="left" style="padding-left:7%; padding-right:7%; text-align:justify">
-        <b>You:</b> a Wellesley affiliate (current student, graduate, professor, staff) <br>
-        <b>Us:</b> a team of Wellesley seniors looking to make connections in our communities <br>
-        <b>WeMap:</b> the Wellesley Network on a map! Once you sign up for our service (free!), you
-        will have access to a peer-created network that visualizes the connections between
-        Wellesley affiliates. You will be able to view the profiles and stories of Wellesley
-        individuals across the world. <br><br>
-        Questions: contact us at nday@ and mngo@ and we will be happy to chat!<br><br>
-    </p>
-    <p align="center">Click login or sign up to begin!</p><br>
-
-    <form method="post" action="" align="center">
-        <input type="submit" name="submit" value="Login" />
-        <input type="submit" name="submit" value="Sign Up" />
-    </form>
-
-</div>
 
 </body>
 </html>
