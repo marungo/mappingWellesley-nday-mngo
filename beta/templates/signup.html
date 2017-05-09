@@ -3,8 +3,9 @@
 <head>
     <meta charset='utf-8'>
     <meta name=author content="Naomi Day and MR Ngo">
+    <link rel="stylesheet" type="text/css" href="wemapstyle.css">
 </head>
-<body>  
+<body id="body">  
 
 <!-- display flash messages -->
 {% with messages = get_flashed_messages() %}
@@ -17,21 +18,26 @@
   {% endif %}
 {% endwith %}
 
-<h1>Sign Up!</h1>
 
-<p>Please Sign Up. Your username will be your Wellesley alias:
-    <form method="post" action="">
-        <p><label for="name">Name</label>
-            <input type="text" name="name"></p>
-        <p><label for="year">Class Year</label>
-            <input type="text" name="year"></p>
-        <p><label for="email">Wellesley Email</label>
-            <input type="text" name="email"></p>
-        <p><label for="password">Password</label>
-            <input type="password" name="password"></p>
-        <p><label for="verify">Retype Password</label>
-            <input type="password" name="verify"></p>
-        <p><input type="submit" name='submit' value="sign up"></p>
-    </form></p>
+<div id="main">
+    <h1 align="center">Sign Up for WeMap!</h1>
+
+    <p>Please fill out the following form. Your username will be your Wellesley alias.
+        <form method="post" action="">
+            <p><label for="name">Name:</label>
+                <input type="text" name="name"></p>
+            <p><label for="year">Class Year:</label>
+                <input type="text" name="year"></p>
+            <p><label for="email">Wellesley Email:</label>
+                <input type="text" name="email"></p>
+            <p><label for="password">Password:</label>
+                <input type="password" name="password"></p>
+            <p><label for="verify">Retype Password:</label>
+                <input type="password" name="verify"></p>
+            <p><input type="submit" name='submit' value="sign up"></p>
+        </form></p><br><br>
+
+        <p>(Already signed up? Click <a href="/login/">here</a> to login!)</p>
+</div>
 </body>
 </html>

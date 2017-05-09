@@ -3,18 +3,9 @@
 <head>
     <meta charset='utf-8'>
     <meta name=author content="Naomi Day and MR Ngo">   
-    <style>
-        #home {
-            margin:auto;
-            width:50%;
-            height:80%;
-            background-color:#cccedd;
-            font-family:Avenir;
-            padding-bottom:2%;
-        }
-    </style>  
+    <link rel="stylesheet" type="text/css" href="wemapstyle.css">
 </head>
-<body style="background-color:#002776;">  
+<body id="body">
 
 <!-- display flash messages -->
 {% with messages = get_flashed_messages() %}
@@ -27,7 +18,8 @@
   {% endif %}
 {% endwith %}
 
-<div id="home">
+
+<div id="main">
     <h1 align="center">WeMap:<br>Mapping Wellesley Connections</h1>
 
     <p align="center">Welcome to WeMap! <br><br></p>

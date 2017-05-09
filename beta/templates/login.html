@@ -2,9 +2,10 @@
 <html lang='en'>
 <head>
     <meta charset='utf-8'>
-    <meta name=author content="Naomi Day and MR Ngo">     
+    <meta name=author content="Naomi Day and MR Ngo">    
+    <link rel="stylesheet" type="text/css" href="wemapstyle.css">
 </head>
-<body>  
+<body id="body">  
 
 <!-- display flash messages -->
 {% with messages = get_flashed_messages() %}
@@ -17,17 +18,20 @@
   {% endif %}
 {% endwith %}
 
-<h1>Login</h1>
 
-<p>Please login:
+<div id="main">
+    <h1 align="center">Login to WeMap</h1>
+
     <form method="post" action="">
-        <p><label for="username">Username</label>
+        <p><label for="username">Username:</label>
             <input type="text" name="username"></p>
-        <p><label for="password">Password</label>
+        <p><label for="password">Password:</label>
             <input type="password" name="password"></p>
         <p><input type="submit" name='submit' value="login"></p>
+    </form><br><br>
 
-    </form></p>
+    <p>(Haven't signed up? Click <a href="/signup/">here</a> to join!)</p>
+</div>
 
 </body>
 </html>
