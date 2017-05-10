@@ -28,7 +28,7 @@ def home():
 @app.route('/login/', methods=["GET", "POST"])
 def login():
     if request.method == 'POST':
-    	if request.form['submit'] == 'login':
+    	if request.form['submit'] == 'Login':
 	        username = request.form['username']
 	        password = request.form['password']
 	        conn = queries.getConn()

@@ -1,5 +1,5 @@
 /* STYLING FOR ALL PAGES (background color, font). Requires pages to have body with id=body */
-body {
+#body {
   font-family:Avenir;
   background-color:#002776;
 }
@@ -11,11 +11,15 @@ body {
   background-color:#cccedd;
   padding-bottom:2%;
 }
+/* END ALL PAGE STYLING */
+
+
+
 
 
 /* MAP.HTML STYLING */
 /* The Modal (background) */
-modal {
+.modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 1; /* Sit on top */
@@ -28,7 +32,7 @@ modal {
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 /* Modal Content/Box */
-modal-content {
+.modal-content {
     background-color: #fefefe;
     margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
@@ -36,14 +40,14 @@ modal-content {
     width: 80%; /* Could be more or less, depending on screen size */
 }
 /* Modal Close Button */
-close {
+.close {
     color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
 }
-close:hover,
-close:focus {
+.close:hover,
+.close:focus {
     color: black;
     text-decoration: none;
     cursor: pointer;
@@ -54,17 +58,18 @@ h1 {
   text-align: center;
 }
 
-wrapper {
+#wrapper {
 
 }
 
-map {
-  height: 500px;
-  width: 73%;
-  float: right;
+#map {
+  height:500px;
+  width:73%;
+  float:right;
+  background-color:#cccedd;
 }
 
-anecdotes {
+#anecdotes {
   height:500px;
   width: 24%;
   overflow: auto;
