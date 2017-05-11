@@ -16,7 +16,7 @@ create table wellesley_people(
 create table anecdotes(
 	aid int auto_increment primary key,
 	title varchar(100) not null,
-	content varchar(300) not null, -- parse #tags and @usernames later
+	content varchar(300) not null,
 	likes int default 0 not null,
 	lat float(9,6) not null,
 	lng float(9,6) not null,
@@ -30,4 +30,4 @@ create table anecdotes(
 
 # ANONYMOUS user
 INSERT into wellesley_people values ('wwellesl','wwellesl@wellesley.edu','Wendy Wellesley','wendy4prez',1993);
-INSERT into anecdotes values (1, "my title", "anecdote content",42.0,-71.3,"wwellesl", 0);
+INSERT into anecdotes values (1, "my title", "anecdote content",0,42.0,-71.3,"wwellesl", 0);

@@ -1,5 +1,6 @@
 # WeMap: Mapping Wellesley Connections
 # Authors: MR Ngo and Naomi Day
+
 import sys
 import MySQLdb
 import dbconn2
@@ -7,7 +8,10 @@ from mngo_dsn import dsn
 from werkzeug.security import generate_password_hash, check_password_hash
 
 ################################################
-# Add users to database
+# Add users to database. Name, email, password,
+# year provided. Email must have @wellesley.edu,
+# and is assumed to be a valid Wellesley address
+# if formatted that way.
 ################################################
 def insertUser(conn,nm,email,password,year):
     username = email.split("@")[0]
@@ -16,7 +20,13 @@ def insertUser(conn,nm,email,password,year):
         "values (%s,%s,%s,%s,%s)",(nm,email,username,password,year))
 
 ################################################
-# Insert anecdote entered on map into database
+# Insert anecdote entered on map into database.
+# Anecdote title, content, location (lat/long
+# coordinates), and username are provided, as
+# well as whether or not the user elected to
+# have the anecdote displayed anonymously. All
+# anecdotes in database are associated with a
+# username.
 ################################################
 def insertAnecdote(conn,title,content,lat,lng,username,anonymous):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
@@ -30,7 +40,7 @@ def insertAnecdote(conn,title,content,lat,lng,username,anonymous):
 ################################################
 # adds to the number of likes
 ################################################
-def updateLikes(conn,aid,num_likes):
+def addLike(conn,aid,num_likes):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     curs.execute("SELECT likes from anecdotes where aid=%s",(aid,))
     likes = curs.fetchone()['likes']
@@ -39,16 +49,17 @@ def updateLikes(conn,aid,num_likes):
 
 ################################################
 # Get all anecdotes where search input matches
-# anything in any titles or content of anecdotes
+# anything in any titles or content of anecdotes.
 ################################################
-def getAnecdotesByKeyword(conn, content):
+def getAnecdotesByKeyword(conn, search):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
-    content = "%"+content+"%"
-    curs.execute("SELECT * from anecdotes where content like %s or title like %s",(content,content))
+    search = "%"+consearchtent+"%"
+    curs.execute("SELECT * from anecdotes where search like %s or title like %s",(search,search))
     return curs.fetchall()
 
 ################################################
 # Get all anecdotes belonging to a certain user
+# (username provided).
 ################################################
 def getAnecdotesByUser(conn,username):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
@@ -56,7 +67,8 @@ def getAnecdotesByUser(conn,username):
     return curs.fetchall()
 
 ################################################
-# returns all of the anecdotes in anecdotes table
+# Get all anecdotes that currently exist in the
+# database.
 ################################################
 def getAllAnecdotes(conn):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
@@ -64,7 +76,8 @@ def getAllAnecdotes(conn):
     return curs.fetchall()
 
 ################################################
-# Check that username and password match a user in our database
+# Check that username and password correctly
+# match a user in our database.
 ################################################
 def checkCredentials(conn,username,password):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
@@ -72,9 +85,9 @@ def checkCredentials(conn,username,password):
     return check_password_hash(curs.fetchone()['password'],password)
 
 ################################################
-# Upon login, get all user info from database
+# Get all user information from database, given
+# a username. This happens when logging in.
 ################################################
-# query for person in wellesley_people (upon login)
 def getUserInfo(conn,username):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     curs.execute("SELECT * from wellesley_people where username=%s",(username,))
@@ -82,14 +95,12 @@ def getUserInfo(conn,username):
 
 
 ################################################
-# Upon sign up, check if they already exist in 
-# database - tell them username is taken (either
-# they already signed up or they misspelled something. 
-# If not in database, then add them, and 
-# automatically log them in with their new creds
-# provided their password + verify password are
-# same. (If not same, tell them to try again.)
-#
+# Upon sign up, check if a user already exists in 
+# database. If they do not, add them to the
+# database and log them in with the provided
+# credentials so long as the password and verify
+# password are the same.
+# Return type:
 # 0: username is taken
 # 1: success
 # 2: passwords do not match
@@ -109,7 +120,10 @@ def addUser(conn,name,email,year,password,verify):
         return 2
 
 ################################################
-# 
+# Update an anecdote (identified by the aid) with
+# title, content, author, and whether or not it
+# displays anonymously. Called even if no fields
+# are modified.
 ################################################
 def updateAnecdote(conn,aid,title,content,author,anonymous):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
@@ -117,7 +131,9 @@ def updateAnecdote(conn,aid,title,content,author,anonymous):
         (title,content,author,anonymous,aid))
 
 ################################################
-# 
+# Delete an anecdote (identified by the aid).
+# Currently does not verify that user intended
+# to delete anecdote.
 ################################################
 def deleteAnecdote(conn,aid):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
@@ -125,7 +141,7 @@ def deleteAnecdote(conn,aid):
     print ("deleted from anecdotes aid " + aid)
 
 ################################################
-# Gets database connection
+# Gets database connection.
 ################################################
 def getConn():
     dsn['db'] = 'mapdb_db' # the database we want to connect to

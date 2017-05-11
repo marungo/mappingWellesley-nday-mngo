@@ -1,3 +1,6 @@
+<!-- WeMap: Mapping Wellesley Connections
+    Authors: MR Ngo and Naomi Day -->
+    
 <!-- Google Maps API Key: -->
 <!-- AIzaSyA-nT9fP4I7GrFPu_J-V-5ajx1Esns2aNk -->
 
@@ -106,7 +109,7 @@
 
         <!-- ADD FORM FOR INPUTTING INFO FOR AN INFOWINDOW -->
         <form action="" method="post" name="anecdote">
-          <h3>Add a Marker</h3>
+          <h3>Add an anecdote at the place you selected</h3>
           <p>Title: <input type='text' id='title' name='title' value="" default='Randomly Met an Alumna on the train!'></p>
 
           <p>Contents: <textarea name='content' id='content' rows='5' cols='50' default='describe your experience'></textarea></p>
@@ -138,7 +141,7 @@
           </form>
         <h2>Anecdotes currently on map:</h2>
         {% for anecdote in anecdotes %}
-          <div class='anecdote' border='1px blue solid' class='anecdote' id='{{ anecdote.aid }}'>
+          <div class='anecdote' border='1px blue solid' class='anecdote'>
             <h3>
               {% if anecdote['anonymous'] == 0 %}
                 <form action='' method='postl' name='profile' >
@@ -149,7 +152,7 @@
               {% endif %}
             </h3>
             <p> {{ anecdote.content }} </p>
-            <p><img src="static/img/snaps.png"  style='width:25px;height:25px;'> {{ anecdote.likes }} likes</p>
+            <p><img src="static/img/snaps.png"  style='width:25px;height:25px;' onclick="likeAnecdote('{{ anecdote.aid }}');"><span id='{{ anecdote.aid }}'>{{ anecdote.likes }}</span> snaps</p>
           </div>
         {% endfor %}
       </div>
@@ -165,10 +168,24 @@
 
     <script type="text/javascript">
     // jquery for adding likes to an anecdote
-    $('.anecdote').click(function(event) {
-      console.log(event.target.id);
-      console.log(this.id);
-    });
+    var liked_anecdotes = [];
+    
+    function likeAnecdote(aid) {
+      if (window.XMLHttpRequest) {
+          // code for IE7+, Firefox, Chrome, Opera, Safari
+          xmlhttp = new XMLHttpRequest();
+      } else {
+          // code for IE6, IE5
+          xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+      }
+      xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            document.getElementById(aid).innerHTML = parseInt(document.getElementById(aid).innerHTML) + 1;
+          }
+      }
+      xmlhttp.open("GET","static/likeAnecdote.php?q="+aid,true);
+      xmlhttp.send();
+    }
 
 
       // jquery for handling the modal of the form for adding a new anecdote

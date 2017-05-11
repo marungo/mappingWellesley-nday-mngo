@@ -1,3 +1,6 @@
+# WeMap: Mapping Wellesley Connections
+# Authors: MR Ngo and Naomi Day
+
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from __future__ import print_function
