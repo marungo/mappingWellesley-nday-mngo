@@ -17,6 +17,7 @@ create table anecdotes(
 	aid int auto_increment primary key,
 	title varchar(100) not null,
 	content varchar(300) not null, -- parse #tags and @usernames later
+	likes int default 0 not null,
 	lat float(9,6) not null,
 	lng float(9,6) not null,
 	username varchar(8) not null,

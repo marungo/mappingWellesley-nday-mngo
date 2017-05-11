@@ -89,10 +89,10 @@
       {% endif %}
     {% endwith %}
     <div id='menu' width='500px'>
-      <form method='post' name="map">
+      <form method='post' name="menu">
         <input type='submit' name="submit" value="Go To Map"></input>
-        <input type='submit' name="submit" value="Logout"></input>
         <input type='submit' name="submit" value="Go to Profile"></input>
+        <input type='submit' name="submit" value="Logout"></input>
       </form>
     </div>
 
@@ -103,6 +103,7 @@
       <!-- Modal content -->
       <div class="modal-content">
         <span class="close">&times;</span>
+
         <!-- ADD FORM FOR INPUTTING INFO FOR AN INFOWINDOW -->
         <form action="" method="post" name="anecdote">
           <h3>Add a Marker</h3>
@@ -112,9 +113,11 @@
 
           <p><input type="hidden" name="lat" id="lat" step="0.00001" value="">
           <input type="hidden" name="lng" id="lng" step="0.00001" value=""></p>
+
           <p><input type='checkbox' name='anon' id='anon' value='1'> Make this post anonymous</p>
           <input type="submit" name="submit" id="btnaddmarker" value="add marker">
         </form>
+
       </div>
     </div>
 
@@ -135,15 +138,19 @@
           </form>
         <h2>Anecdotes currently on map:</h2>
         {% for anecdote in anecdotes %}
-          <h3>
-            {{ anecdote['title'] }} 
-            {% if anecdote['anonymous'] == 0 %}
-              ({{ anecdote['username'] }})
-            {% else %}
-              (anonymous)
-            {% endif %}
-          </h3>
-          <p> {{ anecdote['content'] }} </p>
+          <div class='anecdote' border='1px blue solid'>
+            <h3>
+              {% if anecdote['anonymous'] == 0 %}
+                <form action='' method='postl' name='profile'>
+                  {{ anecdote.title }} (<a href="/user/{{anecdote.username}}" onclick="form.submit();">{{anecdote.username}}</a>) 
+                  <img src="static/img/snaps.png" style='width:25px;height:25px;' onclick=''>
+                </form>
+              {% else %}
+                {{ anecdote.title }} (anonymous)
+              {% endif %}
+            </h3>
+            <p> {{ anecdote.content }} </p>
+          </div>
         {% endfor %}
       </div>
     </div>

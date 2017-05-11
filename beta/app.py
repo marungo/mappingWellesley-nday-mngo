@@ -28,6 +28,7 @@ def home():
 @app.route('/login/', methods=["GET", "POST"])
 def login():
     if request.method == 'POST':
+
     	if request.form['submit'] == 'Login':
 	        username = request.form['username']
 	        password = request.form['password']
@@ -77,6 +78,9 @@ def signup():
 def map(username):
 	conn = queries.getConn()
 	if request.method=="POST":
+		print(request.form)
+
+		# MAIN MENU
 		if request.form['submit'] == 'Go To Map':
 			return redirect(url_for('map', username=username))
 		elif request.form['submit'] == 'Logout':
@@ -84,6 +88,21 @@ def map(username):
 			return redirect(url_for('home'))
 		elif request.form['submit'] == 'Go to Profile':
 			return redirect(url_for('user',username=session['username']))
+
+		# FILTER ANECDOTES
+		elif request.form['submit'] == 'filter anecdotes':
+			content = request.form['content']
+			print(content)
+			if request.form['filtertype'] == 'username':
+				print('reached username')
+				filtered_anecdotes = queries.getAnecdotesByUser(conn, content)
+				return render_template('map.html', username=username, anecdotes=filtered_anecdotes)
+			elif request.form['filtertype'] == 'keyword':
+				print('reached keyword')
+				filtered_anecdotes = queries.getAnecdotesByKeyword(conn, content)
+				return render_template('map.html', username=username, anecdotes=filtered_anecdotes)
+
+		# ADD AN ANECDOTE TO MAP
 		elif request.form['submit'] == 'add marker':
 			lat = request.form['lat']
 			lng = request.form['lng']
@@ -99,17 +118,6 @@ def map(username):
 				flash("please select a location, give a title and write your anecdote!");
 			else:
 				worked = queries.insertAnecdote(conn,title,content,lat,lng,username,anonymous)
-		elif request.form['submit'] == 'filter anecdotes':
-			content = request.form['content']
-			print(content)
-			if request.form['filtertype'] == 'username':
-				print('reached username')
-				filtered_anecdotes = queries.getAnecdotesByUser(conn, content)
-				return render_template('map.html', username=username, anecdotes=filtered_anecdotes)
-			elif request.form['filtertype'] == 'keyword':
-				print('reached keyword')
-				filtered_anecdotes = queries.getAnecdotesByKeyword(conn, content)
-				return render_template('map.html', username=username, anecdotes=filtered_anecdotes)
 	if 'username' not in session:
 		flash("You need to log in!")
 		return redirect(url_for('login'))
@@ -121,6 +129,10 @@ def map(username):
 def user(username):
 	conn = queries.getConn()
 	if request.method=="POST":
+		print(request.form)
+		# MAIN MENU
+		if 'myprofile' in request.form:
+			print('hey there myprofile')
 		if request.form['submit'] == 'Go To Map':
 			return redirect(url_for('map', username=username))
 		elif request.form['submit'] == 'Logout':
@@ -128,6 +140,8 @@ def user(username):
 			return redirect(url_for('home'))
 		elif request.form['submit'] == 'Go to Profile':
 			return redirect(url_for('user',username=session['username']))
+
+		# UPDATE AND DELETE ANECDOTES
 		elif request.form['submit'] == "Delete your anecdote":
 			aid = request.form['aid']
 			queries.deleteAnecdote(conn,aid)
