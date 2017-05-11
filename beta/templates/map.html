@@ -138,18 +138,18 @@
           </form>
         <h2>Anecdotes currently on map:</h2>
         {% for anecdote in anecdotes %}
-          <div class='anecdote' border='1px blue solid'>
+          <div class='anecdote' border='1px blue solid' class='anecdote' id='{{ anecdote.aid }}'>
             <h3>
               {% if anecdote['anonymous'] == 0 %}
-                <form action='' method='postl' name='profile'>
+                <form action='' method='postl' name='profile' >
                   {{ anecdote.title }} (<a href="/user/{{anecdote.username}}" onclick="form.submit();">{{anecdote.username}}</a>) 
-                  <img src="static/img/snaps.png" style='width:25px;height:25px;' onclick=''>
                 </form>
               {% else %}
                 {{ anecdote.title }} (anonymous)
               {% endif %}
             </h3>
             <p> {{ anecdote.content }} </p>
+            <p><img src="static/img/snaps.png"  style='width:25px;height:25px;'> {{ anecdote.likes }} likes</p>
           </div>
         {% endfor %}
       </div>
@@ -164,20 +164,27 @@
     </div>
 
     <script type="text/javascript">
+    // jquery for adding likes to an anecdote
+    $('.anecdote').click(function(event) {
+      console.log(event.target.id);
+      console.log(this.id);
+    });
 
-      var map;
-      var allMarkers = [];
 
+      // jquery for handling the modal of the form for adding a new anecdote
       var modal = document.getElementById('myModal');
-
-     $("#addanecdote").click(function() {
-            modal.style.display = "block";
+      $("#addanecdote").click(function() {
+        modal.style.display = "block";
       });
-
       var span = document.getElementsByClassName("close")[0];
       span.onclick = function() {
           modal.style.display = "none";
       }
+
+
+      // code for the Google Maps map
+      var map;
+      var allMarkers = [];
 
       function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {

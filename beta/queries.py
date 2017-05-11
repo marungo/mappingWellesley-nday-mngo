@@ -28,6 +28,16 @@ def insertAnecdote(conn,title,content,lat,lng,username,anonymous):
         print("error")
 
 ################################################
+# adds to the number of likes
+################################################
+def updateLikes(conn,aid,num_likes):
+    curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    curs.execute("SELECT likes from anecdotes where aid=%s",(aid,))
+    likes = curs.fetchone()['likes']
+    new_likes = likes + num_likes
+    curs.execute("UPDATE anecdotes set likes=%s where aid=%s",(new_likes,aid))
+
+################################################
 # Get all anecdotes where search input matches
 # anything in any titles or content of anecdotes
 ################################################
@@ -46,7 +56,7 @@ def getAnecdotesByUser(conn,username):
     return curs.fetchall()
 
 ################################################
-# 
+# returns all of the anecdotes in anecdotes table
 ################################################
 def getAllAnecdotes(conn):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
