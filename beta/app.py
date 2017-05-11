@@ -97,9 +97,9 @@ def map(username):
 			content = request.form['content']
 			print(content)
 			if request.form['filtertype'] == 'username':
-				print('reached username')
-				filtered_anecdotes = queries.getAnecdotesByUser(conn, content)
-				return render_template('map.html', username=username, anecdotes=filtered_anecdotes)
+				if content != '':
+					filtered_anecdotes = queries.getAnecdotesByUser(conn, content)
+					return render_template('map.html', username=username, anecdotes=filtered_anecdotes)
 			elif request.form['filtertype'] == 'keyword':
 				print('reached keyword')
 				filtered_anecdotes = queries.getAnecdotesByKeyword(conn, content)

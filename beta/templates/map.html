@@ -1,83 +1,11 @@
 <!-- WeMap: Mapping Wellesley Connections
     Authors: MR Ngo and Naomi Day -->
-    
-<!-- Google Maps API Key: -->
-<!-- AIzaSyA-nT9fP4I7GrFPu_J-V-5ajx1Esns2aNk -->
 
 <!DOCTYPE html>
 <html>
   <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
-    <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/wemapstyle.css') }}"> -->
-    <style>
-      .modal {
-        display: none; /* Hidden by default */
-        position: fixed; /* Stay in place */
-        z-index: 1; /* Sit on top */
-        left: 0;
-        top: 0;
-        width: 100%; /* Full width */
-        height: 100%; /* Full height */
-        overflow: auto; /* Enable scroll if needed */
-        background-color: rgb(0,0,0); /* Fallback color */
-        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-      }
-  <!-- /* Modal Content/Box */ -->
-      .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto; /* 15% from the top and centered */
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%; /* Could be more or less, depending on screen size */
-      }
-      <!-- /* Modal Close Button */ -->
-      .close {
-          color: #aaa;
-          float: right;
-          font-size: 28px;
-          font-weight: bold;
-      }
-      .close:hover,
-      .close:focus {
-          color: black;
-          text-decoration: none;
-          cursor: pointer;
-      }
-
-
-      h1 {
-        text-align: center;
-      }
-
-      #wrapper {
-
-      }
-
-      #map {
-        height:500px;
-        width:73%;
-        float:right;
-        background-color:#cccedd;
-      }
-
-      #anecdotes {
-        height:500px;
-        width: 24%;
-        overflow: auto;
-        float: left;
-      }
-
-      h2 {
-        text-align: center;
-        display: inline-block;
-      }
-
-      #menu {
-        position: fixed;
-        right: 20px;
-        <!-- /*width: 30%;*/ -->
-      }
-</style>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/map.css') }}">
   </head>
   <body id="body">
 
@@ -91,6 +19,7 @@
         </div>
       {% endif %}
     {% endwith %}
+
     <div id='menu' width='500px'>
       <form method='post' name="menu">
         <input type='submit' name="submit" value="Go To Map"></input>
@@ -100,22 +29,18 @@
     </div>
 
     <h1>WeMap</h1>
-
-
+    
     <div id="myModal" class="modal">
       <!-- Modal content -->
       <div class="modal-content">
         <span class="close">&times;</span>
 
         <!-- ADD FORM FOR INPUTTING INFO FOR AN INFOWINDOW -->
-        <form action="" method="post" name="anecdote">
+        <form action="" method="post" name="anecdote" style='text-align:center'>
           <h3>Add an anecdote at the place you selected</h3>
           <p>Title: <input type='text' id='title' name='title' value="" default='Randomly Met an Alumna on the train!'></p>
 
           <p>Contents: <textarea name='content' id='content' rows='5' cols='50' default='describe your experience'></textarea></p>
-
-          <p><input type="hidden" name="lat" id="lat" step="0.00001" value="">
-          <input type="hidden" name="lng" id="lng" step="0.00001" value=""></p>
 
           <p><input type='checkbox' name='anon' id='anon' value='1'> Make this post anonymous</p>
           <input type="submit" name="submit" id="btnaddmarker" value="add marker">
@@ -124,70 +49,46 @@
       </div>
     </div>
 
-    <div id='wrapper'>
+      <div id='anecdotes'>
+          <h1 style='text-align:center'>Anecdotes</h1>
 
-      <div id="anecdotes">
           <!-- Form for filtering anecdotes on map via username, tags, or keywords -->
-          <form action="" method="post" name="filter">
-            <h3>Filter anecdotes shown on map</h3>
-            Search by: 
+          <form action="" method="post" name="filter" style='text-align:center'>
             <select name='filtertype'>
               <option value="username">user</option>
               <option value="keyword">keyword</option>
             </select>
-            <input type='text' id='content' name='content' value="" width="200px">
+            <input type='text' id='content' name='content' value="" style="width:150px">
             <input type='submit' name='submit' id='filtersubmit' value="filter anecdotes">
-            <br>
           </form>
-        <h2>Anecdotes currently on map:</h2>
-        {% for anecdote in anecdotes %}
-          <div class='anecdote' border='1px blue solid' class='anecdote'>
-            <h3>
-              {% if anecdote['anonymous'] == 0 %}
-                <form action='' method='postl' name='profile' >
-                  {{ anecdote.title }} (<a href="/user/{{anecdote.username}}" onclick="form.submit();">{{anecdote.username}}</a>) 
-                </form>
-              {% else %}
-                {{ anecdote.title }} (anonymous)
-              {% endif %}
-            </h3>
-            <p> {{ anecdote.content }} </p>
-            <p><img src="static/img/snaps.png"  style='width:25px;height:25px;' onclick="likeAnecdote('{{ anecdote.aid }}');"><span id='{{ anecdote.aid }}'>{{ anecdote.likes }}</span> snaps</p>
-          </div>
-        {% endfor %}
+          <br>
+
+          {% for anecdote in anecdotes %}
+            <div class='anecdote' style='border:1px solid black' class='anecdote'>
+              <h3>
+                {% if anecdote['anonymous'] == 0 %}
+                  <form action='' method='postl' name='profile' >
+                    &nbsp;&nbsp;&nbsp;{{ anecdote.title }} (<a href="/user/{{anecdote.username}}" onclick="form.submit();">{{anecdote.username}}</a>) 
+                  </form>
+                {% else %}
+                  &nbsp;&nbsp;&nbsp;{{ anecdote.title }} (anonymous)
+                {% endif %}
+              </h3>
+              <p>&nbsp;&nbsp;&nbsp;{{ anecdote.content }} </p>
+            </div>
+            <br>
+          {% endfor %}
+        </div>
       </div>
-    </div>
 
       <div id="mwrapper">
-        <button type='button' id='addanecdote' disabled>Add Anecdote</button>
+        <button type='button' id='addanecdote' style='width:100px;height:30px;' disabled>Add Anecdote</button>
       </div>
 
-      <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+      <input id="pac-input" class="controls" type="text" placeholder="Search Box" style='width:200px'>
       <div id="map"></div>
-    </div>
 
     <script type="text/javascript">
-    // jquery for adding likes to an anecdote
-    var liked_anecdotes = [];
-    
-    function likeAnecdote(aid) {
-      if (window.XMLHttpRequest) {
-          // code for IE7+, Firefox, Chrome, Opera, Safari
-          xmlhttp = new XMLHttpRequest();
-      } else {
-          // code for IE6, IE5
-          xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-      }
-      xmlhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            document.getElementById(aid).innerHTML = parseInt(document.getElementById(aid).innerHTML) + 1;
-          }
-      }
-      xmlhttp.open("GET","static/likeAnecdote.php?q="+aid,true);
-      xmlhttp.send();
-    }
-
-
       // jquery for handling the modal of the form for adding a new anecdote
       var modal = document.getElementById('myModal');
       $("#addanecdote").click(function() {
@@ -197,7 +98,6 @@
       span.onclick = function() {
           modal.style.display = "none";
       }
-
 
       // code for the Google Maps map
       var map;
@@ -218,8 +118,10 @@
 
         // Create the search box and link it to the UI element.
         var input = document.getElementById('pac-input');
+        var addanecdote = document.getElementById('addanecdote');
         var searchBox = new google.maps.places.SearchBox(input);
-        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+        map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
+        map.controls[google.maps.ControlPosition.TOP_RIGHT].push(addanecdote);
         // Bias the SearchBox results towards current map's viewport.
         map.addListener('bounds_changed', function() {
           searchBox.setBounds(map.getBounds());

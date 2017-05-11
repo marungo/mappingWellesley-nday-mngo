@@ -5,8 +5,10 @@
 
 		<?php 
 			require_once("/home/cs304/public_html/php/DB-functions.php");
+			print "EHLLOOO are you theeerrree";
 
-			$aid = intval($_GET['q']);
+			$aid = intval($_REQUEST['aid']);
+			print $aid;
 			$mngo_nday_dsn = array ('hostspec' => 'localhost',
 							'username' => 'mapdb',
 							'password' => 'nnmhNR33ETKuQAy',
@@ -17,14 +19,10 @@
 			$self = $_SERVER['PHP_SELF'];
 
 			// queries to add 1 to the likes column of particular anecdote
-			$getlikes_query = "SELECT likes from anecdotes where aid=?";
-			$addlike_query = "UPDATE anecdotes set likes=? where aid=?"; 
+			$addlike_query = "UPDATE anecdotes set likes=likes+1 where aid=?";
+			$addlike_resultset = prepared_query($dbh, $addlike_query, array($aid));
 
-			$likes_resultset = prepared_query($dbh, $getlikes_query, [$aid]);
-			$incrementedlikes = $likes_resultset->fetchOne()['likes'] + 1;
-
-			$addlike_resultset = prepared_query($dbh, $addlike_query, [$incrementedlikes]);
-
+			header('Access-Control-Allow-Origin: *');
 		?>
 	</body>
 </html>
