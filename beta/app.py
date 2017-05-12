@@ -42,7 +42,7 @@ def login():
 	        elif queries.checkCredentials(conn,username,password):
 	        	session['username'] = request.form['username']
 	        	print(session.keys())
-	        	return redirect(url_for('map', username=username))
+	        	return redirect(url_for('map', username=session['username']))
 	        else:
 	            flash("Sorry; incorrect")
 	            return render_template('login.html')
@@ -85,7 +85,7 @@ def map(username):
 
 		# MAIN MENU
 		if request.form['submit'] == 'Go To Map':
-			return redirect(url_for('map', username=username))
+			return redirect(url_for('map', username=session['username']))
 		elif request.form['submit'] == 'Logout':
 			session.pop('username', None)
 			return redirect(url_for('home'))
@@ -101,7 +101,6 @@ def map(username):
 					filtered_anecdotes = queries.getAnecdotesByUser(conn, content)
 					return render_template('map.html', username=username, anecdotes=filtered_anecdotes)
 			elif request.form['filtertype'] == 'keyword':
-				print('reached keyword')
 				filtered_anecdotes = queries.getAnecdotesByKeyword(conn, content)
 				return render_template('map.html', username=username, anecdotes=filtered_anecdotes)
 
@@ -137,7 +136,7 @@ def user(username):
 		if 'myprofile' in request.form:
 			print('hey there myprofile')
 		if request.form['submit'] == 'Go To Map':
-			return redirect(url_for('map', username=username))
+			return redirect(url_for('map', username=session['username']))
 		elif request.form['submit'] == 'Logout':
 			session.pop('username', None)
 			return redirect(url_for('home'))

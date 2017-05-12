@@ -53,8 +53,8 @@ def addLike(conn,aid,num_likes):
 ################################################
 def getAnecdotesByKeyword(conn, search):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
-    search = "%"+consearchtent+"%"
-    curs.execute("SELECT * from anecdotes where search like %s or title like %s",(search,search))
+    search = "%"+search+"%"
+    curs.execute("SELECT * from anecdotes where content like %s or title like %s",(search,search))
     return curs.fetchall()
 
 ################################################

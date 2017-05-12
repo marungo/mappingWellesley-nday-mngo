@@ -1,0 +1,13 @@
+h1 {
+    color:#ffffff;
+    text-align:center;
+}
+
+.anecdotes {
+    border: 1px solid black;
+    margin: 10px;
+}
+
+form {
+    text-align:center;
+}

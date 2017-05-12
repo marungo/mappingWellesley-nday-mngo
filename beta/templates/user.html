@@ -6,94 +6,56 @@
   <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
     <!-- <script type="text/javascript" src="map.js"></script> -->
-    <style>
-        /* The Modal (background) */
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgb(0,0,0); /* Fallback color */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-        }
-        /* Modal Content/Box */
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto; /* 15% from the top and centered */
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%; /* Could be more or less, depending on screen size */
-        }
-        /* The Close Button */
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-
-      #menu {
-        position: fixed;
-        right: 20px;
-        /*width: 30%;*/
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/wemapstyle.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/user.css') }}">
   </head>
   <body id="body">
 
     <div id='menu'>
       <form method='post' name="map">
         <input type='submit' name="submit" value="Go To Map"></input>
-        <input type='submit' name="submit" value="Logout"></input>
         <input type='submit' name="submit" value="Go to Profile"></input>
+        <input type='submit' name="submit" value="Logout"></input>
       </form>
     </div>
     
     {% if logged_in %}
-        <h2>Welcome {{ user.nm }}! Here's your post history: </h2>
+        <h1>Welcome {{ user.nm }}! </h1>
     {% else %}
-        <h2> {{ user.nm }} </h2>
+        <h1> {{ user.nm }}'s Profile </h1>
     {% endif %}
 
-    {% for anecdote in anecdotes %}
+    <div id="main">
+        <h2 style='text-align:center'> Post History </h2>
+        {% for anecdote in anecdotes %}
+            <div class="anecdotes">
+                {% if logged_in %}
+                  <h3 style='margin:7px'>
+                      {{ anecdote.title }}
+                      {% if anecdote.anonymous == 1 %}
+                        (anonymous)
+                      {% endif %}
+                  </h3>
 
-      {% if logged_in %}
-        <h3>
-          {{ anecdote.title }}
-          {% if anecdote.anonymous == 1 %}
-            (anonymous)
-          {% endif %}
-        </h3>
-        <p>{{ anecdote.content }}</p>
+                  <p style='margin:7px'>{{ anecdote.content }}</p>
 
-        <button type='button' id='{{ anecdote.aid }}' class="update">Update your anecdote</button>
+                  <form method='post' name="anecdote" id="anecdote">
+                    <button type='button' id='{{ anecdote.aid }}' class="update">Update your anecdote</button>
+                    <input type='submit' name="submit" id='{{ anecdote.aid }}' class="delete" value="Delete your anecdote">
+                    <input type='hidden' name="aid" value="{{ anecdote.aid }}">
+                  </form>
+                  <br>
 
-        <form method='post' name="anecdote" id="anecdote">
-          <input type='submit' name="submit" id='{{ anecdote.aid }}' class="delete" value="Delete your anecdote">
-          <input type='hidden' name="aid" value="{{ anecdote.aid }}">
-        </form>
+                {% else %}
+                    {% if anecdote.anonymous == 0 %}
+                      <h3 style='margin:7px'>{{ anecdote.title }}</h3>
+                      <p style='margin:7px'> {{ anecdote.content }}</p>        
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
 
-      {% else %}
-
-        {% if anecdote.anonymous == 0 %}
-          <h3> {{ anecdote.title }}</h3>
-          <p>{{ anecdote.content }}</p>        
-        {% endif %}
-
-      {% endif %}
-
-    {% endfor %}
 
     <div id="myModal" class="modal">
       <!-- Modal content -->
