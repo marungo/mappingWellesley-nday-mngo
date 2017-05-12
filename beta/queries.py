@@ -81,8 +81,9 @@ def getAllAnecdotes(conn):
 ################################################
 def checkCredentials(conn,username,password):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
-    curs.execute("SELECT password from wellesley_people where username=%s",(username,))
-    return check_password_hash(curs.fetchone()['password'],password)
+    num_rows = curs.execute("SELECT password from wellesley_people where username=%s",(username,))
+    print(num_rows)
+    return False if num_rows == 0 else check_password_hash(curs.fetchone()['password'],password) 
 
 ################################################
 # Get all user information from database, given

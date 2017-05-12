@@ -1,101 +1,93 @@
 <!-- WeMap: Mapping Wellesley Connections
     Authors: MR Ngo and Naomi Day -->
+{% extends "basic.html" %}
+{% block stylesheets %}<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/user.css') }}">{% endblock %}
+{% block body %}
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
-    <!-- <script type="text/javascript" src="map.js"></script> -->
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/wemapstyle.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/user.css') }}">
-  </head>
-  <body id="body">
+  {{ super() }}
+    
+  {% if logged_in %}
+      <h1>Welcome {{ user.nm }}! </h1>
+  {% else %}
+      <h1> {{ user.nm }}'s Profile </h1>
+  {% endif %}
 
-    <div id='menu'>
-      <form method='post' name="map">
-        <input type='submit' name="submit" value="Go To Map"></input>
-        <input type='submit' name="submit" value="Go to Profile"></input>
-        <input type='submit' name="submit" value="Logout"></input>
+  <div id="main">
+      <h2 style='text-align:center'> Post History </h2>
+      {% for anecdote in anecdotes %}
+          <div class="anecdotes">
+              {% if logged_in %}
+                <h3 style='margin:7px'>
+                    {{ anecdote.title }}
+                    {% if anecdote.anonymous == 1 %}
+                      (anonymous)
+                    {% endif %}
+                </h3>
+
+                <p style='margin:7px'>{{ anecdote.content }}</p>
+
+                <form method='post' name="anecdote" id="anecdote">
+                  <button type='button' id='{{ anecdote.aid }}' class="update">Update your anecdote</button>
+                  <input type='submit' name="submit" id='{{ anecdote.aid }}' class="delete" value="Delete your anecdote">
+                  <input type='hidden' name="aid" value="{{ anecdote.aid }}">
+                </form>
+                <br>
+
+              {% else %}
+                  {% if anecdote.anonymous == 0 %}
+                    <h3 style='margin:7px'>{{ anecdote.title }}</h3>
+                    <p style='margin:7px'> {{ anecdote.content }}</p>        
+                  {% endif %}
+              {% endif %}
+          </div>
+      {% endfor %}
+  </div>
+
+  <div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <form action="" method="post" name="updateAnecdote">
+        <p>Title: <input type='text' id='title' name='title' value=""></p>
+        <p>Contents: <textarea name='content' id='content' rows='5' cols='50' value=""></textarea></p>
+        <p><input type='checkbox' name='anon' id='anon' value='1'> Make this post anonymous</p>
+        <input type='hidden' name='aid' id='aid' value="">
+        <input type='hidden' name='username' id='username' value="">
+        <input type="submit" name="submit" id="updateAnecdote" value="update anecdote">
       </form>
     </div>
-    
-    {% if logged_in %}
-        <h1>Welcome {{ user.nm }}! </h1>
-    {% else %}
-        <h1> {{ user.nm }}'s Profile </h1>
-    {% endif %}
+  </div>
 
-    <div id="main">
-        <h2 style='text-align:center'> Post History </h2>
-        {% for anecdote in anecdotes %}
-            <div class="anecdotes">
-                {% if logged_in %}
-                  <h3 style='margin:7px'>
-                      {{ anecdote.title }}
-                      {% if anecdote.anonymous == 1 %}
-                        (anonymous)
-                      {% endif %}
-                  </h3>
+{% endblock %}
 
-                  <p style='margin:7px'>{{ anecdote.content }}</p>
+{% block js %}
+    <script>
+        // grab the modal from document
+        var modal = document.getElementById('myModal');
 
-                  <form method='post' name="anecdote" id="anecdote">
-                    <button type='button' id='{{ anecdote.aid }}' class="update">Update your anecdote</button>
-                    <input type='submit' name="submit" id='{{ anecdote.aid }}' class="delete" value="Delete your anecdote">
-                    <input type='hidden' name="aid" value="{{ anecdote.aid }}">
-                  </form>
-                  <br>
+        // dynamically populate the modal with the anecdote that 
+        // user wants to update using client-side ajax.
+        $(".update").click(function() {
+            var aid = this.id + ''; // or alert($(this).attr('id'));
+            console.log(aid);
+            modal.style.display = "block";
+            {% for anecdote in anecdotes %}
+              var anec_aid = "{{anecdote.aid}}";
+              if (anec_aid == aid) {
+                console.log("{{ anecdote.title }}");
+                $('#title').val("{{anecdote.title}}");
+                $('#content').val("{{anecdote.content}}"); 
+                $('#aid').val("{{anecdote.aid}}");
+                $('#username').val("{{anecdote.username}}");
+              }
+            {% endfor %}
+        });
 
-                {% else %}
-                    {% if anecdote.anonymous == 0 %}
-                      <h3 style='margin:7px'>{{ anecdote.title }}</h3>
-                      <p style='margin:7px'> {{ anecdote.content }}</p>        
-                    {% endif %}
-                {% endif %}
-            </div>
-        {% endfor %}
-    </div>
+        // close the modal back up
+        var span = document.getElementsByClassName("close")[0];
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
 
-
-    <div id="myModal" class="modal">
-      <!-- Modal content -->
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <form action="" method="post" name="updateAnecdote">
-          <p>Title: <input type='text' id='title' name='title' value=""></p>
-          <p>Contents: <textarea name='content' id='content' rows='5' cols='50' value=""></textarea></p>
-          <p><input type='checkbox' name='anon' id='anon' value='1'> Make this post anonymous</p>
-          <input type='hidden' name='aid' id='aid' value="">
-          <input type='hidden' name='username' id='username' value="">
-          <input type="submit" name="submit" id="updateAnecdote" value="update anecdote">
-        </form>
-      </div>
-    </div>
-  </body>
-  <script>
-    // Get the modal
-    var modal = document.getElementById('myModal');
-
-    $(".update").click(function() {
-        var aid = this.id + ''; // or alert($(this).attr('id'));
-        console.log(aid);
-        modal.style.display = "block";
-        {% for anecdote in anecdotes %}
-          var anec_aid = "{{anecdote.aid}}";
-          if (anec_aid == aid) {
-            console.log("{{ anecdote.title }}");
-            $('#title').val("{{anecdote.title}}");
-            $('#content').val("{{anecdote.content}}"); 
-            $('#aid').val("{{anecdote.aid}}");
-            $('#username').val("{{anecdote.username}}");
-          }
-        {% endfor %}
-    });
-
-    var span = document.getElementsByClassName("close")[0];
-    span.onclick = function() {
-        modal.style.display = "none";
-    }
-
-  </script>
-</html>
+      </script>
+{% endblock %}
