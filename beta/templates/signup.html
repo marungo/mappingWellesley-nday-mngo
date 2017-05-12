@@ -1,29 +1,13 @@
-<!doctype html>
-<html lang='en'>
-<head>
-    <meta charset='utf-8'>
-    <meta name=author content="Naomi Day and MR Ngo">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/wemapstyle.css') }}">
-</head>
-<body id="body">  
+{% extends "basic.html" %}
+{% block meta %}
+{{ super() }}
+{% endblock %}
 
-<!-- display flash messages -->
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <div id="flashes">
-    {% for message in messages %}
-      <p>{{ message }}</p>
-    {% endfor %}
-    </div>
-  {% endif %}
-{% endwith %}
-
-
-<div id="main">
-    <h1 align="center">Sign Up for WeMap!</h1>
-
-    <p align="center">Please fill out the following form to join our service.<br>
-        Your username will be your Wellesley alias.</p><br>
+{% block body %}
+    <div id="main">
+        <h1 align="center">Sign Up for WeMap!</h1>
+        <p align="center">Please fill out the following form to join our service.<br>
+            Your username will be your Wellesley alias.</p><br>
         <form method="post" action="" align="left" style="padding-left:27%; padding-right:20%; text-align:justify">
             <p><label for="name">Name:</label>
                 <input type="text" name="name"></p>
@@ -37,8 +21,7 @@
                 <input type="password" name="verify"></p>
             <p><input type="submit" name='submit' value="Sign Up"></p>
         </form></p><br><br>
-
         <p align="center">(Already signed up? Click <a href="/login/">here</a> to login!)</p>
-</div>
-</body>
-</html>
+    </div>
+
+{% endblock %}

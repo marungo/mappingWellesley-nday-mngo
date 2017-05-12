@@ -1,34 +1,9 @@
 <!-- WeMap: Mapping Wellesley Connections
     Authors: MR Ngo and Naomi Day -->
-
-<!DOCTYPE html>
-<html>
-  <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/map.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/wemapstyle.css') }}">
-  </head>
-
-  <body id="body">
-
-    <!-- display flash messages -->
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div id="flashes">
-        {% for message in messages %}
-          <p>{{ message }}</p>
-        {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
-
-    <div id='menu' width='500px'>
-      <form method='post' name="menu">
-        <input type='submit' name="submit" value="Go To Map"></input>
-        <input type='submit' name="submit" value="Go to Profile"></input>
-        <input type='submit' name="submit" value="Logout"></input>
-      </form>
-    </div>
+{% extends "basic.html" %}
+{% block stylesheets %}<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/map.css') }}"> {% endblock %}
+{% block body %}
+    {{ super() }}
 
     <h1 style='color:#fff'>WeMap</h1>
 
@@ -53,45 +28,48 @@
       </div>
     </div>
 
-      <div id='anecdotes'>
-          <h1 style='text-align:center'>Anecdotes</h1>
+    <div id='anecdotes'>
+        <h1 style='text-align:center'>Anecdotes</h1>
 
-          <!-- Form for filtering anecdotes on map via username, tags, or keywords -->
-          <form action="" method="post" name="filter" style='text-align:center'>
-            <select name='filtertype'>
-              <option value="username">user</option>
-              <option value="keyword">keyword</option>
-            </select>
-            <input type='text' id='content' name='content' value="" style="width:150px">
-            <input type='submit' name='submit' id='filtersubmit' value="filter anecdotes">
-          </form>
-          <br>
+        <!-- Form for filtering anecdotes on map via username, tags, or keywords -->
+        <form action="" method="post" name="filter" style='text-align:center'>
+          <select name='filtertype'>
+            <option value="username">user</option>
+            <option value="keyword">keyword</option>
+          </select>
+          <input type='text' id='content' name='content' value="" style="width:150px">
+          <input type='submit' name='submit' id='filtersubmit' value="filter anecdotes">
+        </form>
+        <br>
 
-          {% for anecdote in anecdotes %}
-            <div class='anecdote' style='border:1px solid black;margin:10px' class='anecdote' >
-              <h3 style='margin:7px'>
-                {% if anecdote['anonymous'] == 0 %}
-                  <form action='' method='postl' name='profile' >
-                    {{ anecdote.title }} (<a href="/user/{{anecdote.username}}" onclick="form.submit();">{{anecdote.username}}</a>) 
-                  </form>
-                {% else %}
-                  {{ anecdote.title }} (anonymous)
-                {% endif %}
-              </h3>
-              <p style='margin:7px'>{{ anecdote.content }} </p>
-            </div>
-          {% endfor %}
-        </div>
-      </div>
+        {% for anecdote in anecdotes %}
+          <div class='anecdote' style='border:1px solid black;margin:10px' class='anecdote' >
+            <h3 style='margin:7px'>
+              {% if anecdote['anonymous'] == 0 %}
+                <form action='' method='postl' name='profile' >
+                  {{ anecdote.title }} (<a href="/user/{{anecdote.username}}" onclick="form.submit();">{{anecdote.username}}</a>) 
+                </form>
+              {% else %}
+                {{ anecdote.title }} (anonymous)
+              {% endif %}
+            </h3>
+            <p style='margin:7px'>{{ anecdote.content }} </p>
+          </div>
+        {% endfor %}
+    </div>
 
-      <div id="mwrapper">
-        <button type='button' id='addanecdote' style='width:100px;height:30px;' disabled>Add Anecdote</button>
-      </div>
+    <div id="mwrapper">
+      <button type='button' id='addanecdote' style='width:100px;height:30px;' disabled>Add Anecdote</button>
+    </div>
 
-      <input id="pac-input" class="controls" type="text" placeholder="Search Box" style='width:200px'>
-      <div id="map"></div>
+    <input id="pac-input" class="controls" type="text" placeholder="Search Box" style='width:200px'>
 
-    <script type="text/javascript">
+    <div id="map"></div>
+    
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">    
       // jquery for handling the modal of the form for adding a new anecdote
       var modal = document.getElementById('myModal');
       $("#addanecdote").click(function() {
@@ -231,7 +209,6 @@
       });
 
     </script> 
-
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-nT9fP4I7GrFPu_J-V-5ajx1Esns2aNk&callback=initMap&libraries=places" type="text/javascript"></script>
-  </body>
-</html>
+
+{% endblock %}
