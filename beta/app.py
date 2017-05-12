@@ -6,9 +6,11 @@
 from __future__ import print_function
 from flask import Flask, render_template, redirect, url_for, request, flash, session
 from flask_cas import CAS
+from werkzeug import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 
 import os
+import imghdr
 import sys
 print(sys.getdefaultencoding())
 # my own set of mysql query and statement functions
@@ -110,16 +112,26 @@ def map(username):
 			lng = request.form['lng']
 			title = request.form['title']
 			content = request.form['content']
+			picture = request.files['pic']
+			mime_type = imghdr.what(picture.stream)
+			if mime_type != 'jpeg':
+				raise Exception('Not a JPEG')
+			filename = secure_filename(str(picture)+'.jpeg')
+			pathname = 'static/img/'+filename
+			print (pathname)
+			picture.save(pathname)
 			try:
 				anonymous = int(request.form['anon'])
 			except:
 				anonymous = 0
-
 			info = [lat,lng,title,content];
 			if "" in info:
 				flash("please select a location, give a title and write your anecdote!");
 			else:
-				worked = queries.insertAnecdote(conn,title,content,lat,lng,username,anonymous)
+				worked = queries.insertAnecdote(conn,title,content,lat,lng,username,anonymous,pathname)
+				print ("after query")
+
+	# USER NOT LOGGED IN
 	if 'username' not in session:
 		flash("You need to log in!")
 		return redirect(url_for('login'))
@@ -163,6 +175,7 @@ def user(username):
 	print(username != session['username'])
 	logged_in = username == session['username']
 	anecdotes = queries.getAnecdotesByUser(conn, username)
+	print (anecdotes)
 	user = queries.getUserInfo(conn,username)
 	return render_template('user.html', user=user, anecdotes=anecdotes, logged_in=logged_in)
 

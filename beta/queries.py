@@ -28,12 +28,11 @@ def insertUser(conn,nm,email,password,year):
 # anecdotes in database are associated with a
 # username.
 ################################################
-def insertAnecdote(conn,title,content,lat,lng,username,anonymous):
+def insertAnecdote(conn,title,content,lat,lng,username,anonymous,picpath):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     try:
-    	curs.execute("INSERT into anecdotes (title,content,lat,lng,username,anonymous)"+
-    		"values (%s,%s,%s,%s,%s,%s)",(title,content,lat,lng,username,anonymous))
-        print (username)
+    	curs.execute("INSERT into anecdotes (title,content,lat,lng,username,anonymous,picpath)"+
+    		" values (%s,%s,%s,%s,%s,%s,%s)",(title,content,lat,lng,username,anonymous,picpath))
     except MySQLdb.Error:
         print("error")
 

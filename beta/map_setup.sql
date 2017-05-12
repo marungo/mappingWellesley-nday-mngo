@@ -17,11 +17,11 @@ create table anecdotes(
 	aid int auto_increment primary key,
 	title varchar(100) not null,
 	content varchar(300) not null,
-	likes int default 0 not null,
 	lat float(9,6) not null,
 	lng float(9,6) not null,
 	username varchar(8) not null,
 	anonymous tinyint(1) default 0 not null, -- 0: anecdote not anon; 1: anecdote is anon
+	picpath varchar(100),
 	INDEX (username),
 	foreign key (username) references wellesley_people(username) on delete cascade
 	)
@@ -30,4 +30,4 @@ create table anecdotes(
 
 # ANONYMOUS user
 INSERT into wellesley_people values ('wwellesl','wwellesl@wellesley.edu','Wendy Wellesley','wendy4prez',1993);
-INSERT into anecdotes values (1, "my title", "anecdote content",0,42.0,-71.3,"wwellesl", 0);
+-- INSERT into anecdotes values (1, "my title", "anecdote content",42.0,-71.3,"wwellesl", 0, "/students/mapdb/beta/static/img/picture_upload.jpg");
