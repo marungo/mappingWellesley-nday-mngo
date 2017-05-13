@@ -31,6 +31,7 @@ def insertUser(conn,nm,email,password,year):
 def insertAnecdote(conn,title,content,lat,lng,username,anonymous,picpath):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     try:
+        print (picpath)
     	curs.execute("INSERT into anecdotes (title,content,lat,lng,username,anonymous,picpath)"+
     		" values (%s,%s,%s,%s,%s,%s,%s)",(title,content,lat,lng,username,anonymous,picpath))
     except MySQLdb.Error:

@@ -26,6 +26,10 @@
 
                 <p style='margin:7px'>{{ anecdote.content }}</p>
 
+                {% if anecdote.picpath %}
+                  <p><img src="{{ url_for('static',filename='')}}{{ anecdote.picpath }}" alt="picture for anecdote #{{ anecdote.aid }}" style="width:98%;margin:7px"></p>
+                {% endif %}
+
                 <form method='post' name="anecdote" id="anecdote">
                   <button type='button' id='{{ anecdote.aid }}' class="update">Update your anecdote</button>
                   <input type='submit' name="submit" id='{{ anecdote.aid }}' class="delete" value="Delete your anecdote">
@@ -48,6 +52,8 @@
     <div class="modal-content">
       <span class="close">&times;</span>
       <form action="" method="post" name="updateAnecdote">
+        <h3>Update your anecdote</h3>
+        <p>Select a new image if you want to have a new picture, and remember to mark whether or not the anecdote should be anonymous.</p>
         <p>Title: <input type='text' id='title' name='title' value=""></p>
         <p>Contents: <textarea name='content' id='content' rows='5' cols='50' value=""></textarea></p>
         <p><input type='checkbox' name='anon' id='anon' value='1'> Make this post anonymous</p>

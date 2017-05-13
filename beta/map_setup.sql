@@ -28,6 +28,6 @@ create table anecdotes(
 	-- table constraint
 	ENGINE = InnoDB; 
 
-# ANONYMOUS user
-INSERT into wellesley_people values ('wwellesl','wwellesl@wellesley.edu','Wendy Wellesley','wendy4prez',1993);
+# Test data we used at the beginning
+-- INSERT into wellesley_people values ('wwellesl','wwellesl@wellesley.edu','Wendy Wellesley','wendy4prez',1993);
 -- INSERT into anecdotes values (1, "my title", "anecdote content",42.0,-71.3,"wwellesl", 0, "/students/mapdb/beta/static/img/picture_upload.jpg");

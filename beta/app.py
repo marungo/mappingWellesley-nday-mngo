@@ -29,6 +29,7 @@ def home():
 			return redirect(url_for('signup'))
 	return render_template('home.html')
 
+
 # URL for login page
 @app.route('/login/', methods=["GET", "POST"])
 def login():
@@ -38,6 +39,7 @@ def login():
 	        username = request.form['username']
 	        password = request.form['password']
 	        conn = queries.getConn()
+
 	        if (username == "") or (password == ""):
 	        	flash("Please enter your username and password!")
 	        	return render_template('login.html')
@@ -48,7 +50,9 @@ def login():
 	        else:
 	            flash("Sorry; incorrect")
 	            return render_template('login.html')
+
     return render_template('login.html')
+
 
 # URL for signup page
 @app.route('/signup/', methods=["GET", "POST"])
@@ -61,6 +65,7 @@ def signup():
 		password = request.form['password']
 		verify = request.form['verify']
 
+		# EMAIL MUST END IN @WELLESLEY.EDU
 		if "@wellesley.edu" not in email:
 			flash('Email must be a valid Wellesley Email')
 			return render_template('signup.html')
@@ -76,14 +81,16 @@ def signup():
 			# flash('welcome,'+ name+'!')
 			session['username'] = username
 			return redirect(url_for('user',username=username))
+
 	return render_template('signup.html')
+
 
 # URL for map page for a logged in user
 @app.route('/<username>', methods=['POST', 'GET'])
 def map(username):
 	conn = queries.getConn()
+
 	if request.method=="POST":
-		print(request.form)
 
 		# MAIN MENU
 		if request.form['submit'] == 'Go To Map':
@@ -97,7 +104,6 @@ def map(username):
 		# FILTER ANECDOTES
 		elif request.form['submit'] == 'filter anecdotes':
 			content = request.form['content']
-			print(content)
 			if request.form['filtertype'] == 'username':
 				if content != '':
 					filtered_anecdotes = queries.getAnecdotesByUser(conn, content)
@@ -106,20 +112,24 @@ def map(username):
 				filtered_anecdotes = queries.getAnecdotesByKeyword(conn, content)
 				return render_template('map.html', username=username, anecdotes=filtered_anecdotes)
 
-		# ADD AN ANECDOTE TO MAP
+		# ADD AN ANECDOTE TO MAP (picture optional)
 		elif request.form['submit'] == 'add marker':
 			lat = request.form['lat']
 			lng = request.form['lng']
 			title = request.form['title']
 			content = request.form['content']
 			picture = request.files['pic']
+			# if image not jpeg (or user has not selected an image)
+			# submit the post but inform the user that their picture
+			# was not attached
 			mime_type = imghdr.what(picture.stream)
-			if mime_type != 'jpeg':
-				raise Exception('Not a JPEG')
-			filename = secure_filename(str(picture)+'.jpeg')
-			pathname = 'static/img/'+filename
-			print (pathname)
-			picture.save(pathname)
+			if mime_type == 'jpeg':
+				filename = secure_filename(str(picture)+'.jpeg')
+				pathname = 'img/'+filename
+				picture.save('static/'+pathname)
+			else:
+				pathname = None
+				flash("You either didn't select an image, or the image you selected was not a jpeg. If you wish to attach an image to this post, you can edit it on your profile page.")
 			try:
 				anonymous = int(request.form['anon'])
 			except:
@@ -129,21 +139,23 @@ def map(username):
 				flash("please select a location, give a title and write your anecdote!");
 			else:
 				worked = queries.insertAnecdote(conn,title,content,lat,lng,username,anonymous,pathname)
-				print ("after query")
 
 	# USER NOT LOGGED IN
 	if 'username' not in session:
 		flash("You need to log in!")
 		return redirect(url_for('login'))
+
 	anecdotes = queries.getAllAnecdotes(conn)
 	return render_template('map.html', username=username, anecdotes=anecdotes)
+
 
 # URL for user profile page
 @app.route('/user/<username>', methods=["GET", "POST"])
 def user(username):
 	conn = queries.getConn()
+
 	if request.method=="POST":
-		print(request.form)
+
 		# MAIN MENU
 		if 'myprofile' in request.form:
 			print('hey there myprofile')
@@ -169,10 +181,12 @@ def user(username):
 			except:
 				anonymous = 0
 			queries.updateAnecdote(conn,aid,title,content,user,anonymous)
+
+	# USER NOT LOGGED IN
 	if 'username' not in session:
 		flash("You need to log in!")
 		return redirect(url_for('login'))
-	print(username != session['username'])
+
 	logged_in = username == session['username']
 	anecdotes = queries.getAnecdotesByUser(conn, username)
 	print (anecdotes)
