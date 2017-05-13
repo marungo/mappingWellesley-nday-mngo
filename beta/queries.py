@@ -126,10 +126,10 @@ def addUser(conn,name,email,year,password,verify):
 # displays anonymously. Called even if no fields
 # are modified.
 ################################################
-def updateAnecdote(conn,aid,title,content,author,anonymous):
+def updateAnecdote(conn,aid,title,content,author,anonymous,picpath):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
-    curs.execute('UPDATE anecdotes set title=%s,content=%s,username=%s,anonymous=%s where aid=%s',
-        (title,content,author,anonymous,aid))
+    curs.execute('UPDATE anecdotes set title=%s,content=%s,username=%s,anonymous=%s,picpath=%s where aid=%s',
+        (title,content,author,anonymous,picpath,aid))
 
 ################################################
 # Delete an anecdote (identified by the aid).

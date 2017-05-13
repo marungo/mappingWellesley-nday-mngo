@@ -40,7 +40,10 @@
               {% else %}
                   {% if anecdote.anonymous == 0 %}
                     <h3 style='margin:7px'>{{ anecdote.title }}</h3>
-                    <p style='margin:7px'> {{ anecdote.content }}</p>        
+                    <p style='margin:7px'> {{ anecdote.content }}</p> 
+                    {% if anecdote.picpath %}
+                      <p><img src="{{ url_for('static',filename='')}}{{ anecdote.picpath }}" alt="picture for anecdote #{{ anecdote.aid }}" style="width:98%;margin:7px"></p>
+                    {% endif %}       
                   {% endif %}
               {% endif %}
           </div>
@@ -51,12 +54,13 @@
     <!-- Modal content -->
     <div class="modal-content">
       <span class="close">&times;</span>
-      <form action="" method="post" name="updateAnecdote">
+      <form action="" method="post" name="updateAnecdote" enctype="multipart/form-data">
         <h3>Update your anecdote</h3>
         <p>Select a new image if you want to have a new picture, and remember to mark whether or not the anecdote should be anonymous.</p>
         <p>Title: <input type='text' id='title' name='title' value=""></p>
         <p>Contents: <textarea name='content' id='content' rows='5' cols='50' value=""></textarea></p>
         <p><input type='checkbox' name='anon' id='anon' value='1'> Make this post anonymous</p>
+        <p><input type="file" name="pic" id="pic" value=''></p>
         <input type='hidden' name='aid' id='aid' value="">
         <input type='hidden' name='username' id='username' value="">
         <input type="submit" name="submit" id="updateAnecdote" value="update anecdote">

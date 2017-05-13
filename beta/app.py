@@ -86,6 +86,7 @@ def signup():
 
 
 # URL for map page for a logged in user
+# Route takes a username, and if not logged in then page redirects to login
 @app.route('/<username>', methods=['POST', 'GET'])
 def map(username):
 	conn = queries.getConn()
@@ -150,6 +151,9 @@ def map(username):
 
 
 # URL for user profile page
+# Route takes a username: if it is the logged in user, redirects to
+# their profile (with anonymous posts displaying). If not logged in
+# user, redirects to their profile (without anonymous posts shown).
 @app.route('/user/<username>', methods=["GET", "POST"])
 def user(username):
 	conn = queries.getConn()
@@ -176,11 +180,22 @@ def user(username):
 			content = request.form['content']
 			user = request.form['username']
 			aid = request.form['aid']
+			picture = request.files['pic']
+			# if image not jpeg (or user has not selected an image)
+			# submit the post but inform the user that their picture
+			# was not attached
+			mime_type = imghdr.what(picture.stream)
+			if mime_type == 'jpeg':
+				filename = secure_filename(str(picture)+'.jpeg')
+				pathname = 'img/'+filename
+				picture.save('static/'+pathname)
+			else:
+				pathname = None
 			try:
 				anonymous = request.form['anon']
 			except:
 				anonymous = 0
-			queries.updateAnecdote(conn,aid,title,content,user,anonymous)
+			queries.updateAnecdote(conn,aid,title,content,user,anonymous,pathname)
 
 	# USER NOT LOGGED IN
 	if 'username' not in session:
@@ -189,7 +204,6 @@ def user(username):
 
 	logged_in = username == session['username']
 	anecdotes = queries.getAnecdotesByUser(conn, username)
-	print (anecdotes)
 	user = queries.getUserInfo(conn,username)
 	return render_template('user.html', user=user, anecdotes=anecdotes, logged_in=logged_in)
 
