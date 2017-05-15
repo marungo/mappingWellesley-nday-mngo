@@ -1,26 +1,13 @@
 <!-- WeMap: Mapping Wellesley Connections
     Authors: MR Ngo and Naomi Day -->
 
-<!doctype html>
-<html lang='en'>
-<head>
-    <meta charset='utf-8'>
-    <meta name=author content="Naomi Day and MR Ngo">   
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/wemapstyle.css') }}">
-</head>
-<body id="body">
+{% extends "basic.html" %}
 
-    <!-- display flash messages -->
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div id="flashes">
-        {% for message in messages %}
-          <p>{{ message }}</p>
-        {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
+{% block meta %}
+{{ super() }}
+{% endblock %}
 
+{% block body %}
 
     <div id="main">
         <h1 align="center">WeMap:<br>Mapping Wellesley Connections</h1>
@@ -41,8 +28,9 @@
             <input type="submit" name="submit" value="Login" />
             <input type="submit" name="submit" value="Sign Up" />
         </form>
-
     </div>
+    
+{% endblock %}
 
 </body>
 </html>
